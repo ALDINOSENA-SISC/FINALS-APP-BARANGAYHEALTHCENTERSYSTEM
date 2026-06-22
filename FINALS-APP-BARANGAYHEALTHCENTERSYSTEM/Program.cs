@@ -24,8 +24,6 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
         {
             InitializeFiles();
             MainMenu();
-            
-
         }
 
         static void MainMenu()
@@ -110,6 +108,11 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                             break;
                     }
                 }
+
+                else
+                {
+                    InvalidInput();
+                }
             }
         }
 
@@ -131,7 +134,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                         case 1:
                             if (Login("workers.txt"))
                             {
-                                HealthWorkerDashboard();
+                                HealthWorkerDashBoard();
                             }
                             break;
 
@@ -146,6 +149,11 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                             InvalidInput();
                             break;
                     }
+                }
+
+                else
+                {
+                    InvalidInput();
                 }
             }
         }
@@ -197,13 +205,169 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
         static void PatientDashboard()
         {
+            while (true)
+            {
+                HeaderDisplay("PATIENT DASHBOARD");
+                Console.WriteLine($"\nWelcome, {currentUser}");
+                Console.WriteLine("\n[1] Select Services");
+                Console.WriteLine("[2] View Queue Progress Tracker");
+                Console.WriteLine("[3] View Health Visit History");
+                Console.WriteLine("[4] Logout");
 
+                Console.Write("\nEnter your choice: ");
+
+                if (int.TryParse(Console.ReadLine(), out int patientChoice))
+                {
+                    switch (patientChoice)
+                    {
+                        case 1:
+                            SelectServices();
+                            break;
+
+                       /* case 2:
+                            QueueProgressTracker();
+                            break;
+
+                        case 3:
+                            HealthVisitHistory();
+                            break;*/
+
+                        case 4:
+                            return;
+
+                        default:
+                            InvalidInput();
+                            break;
+                    }
+                }
+
+                else
+                {
+                    InvalidInput();
+                }
+            }
+        }
+
+        static void SelectServices()
+        {
+            List<string> queuedPatients = Load("queues.txt");
+
+            while (true)
+            {
+                HeaderDisplay("SELECT SERVICES");
+                Console.WriteLine("\n[1] Consultation");
+                Console.WriteLine("[2] Vaccination");
+                Console.WriteLine("[3] Maternal Care");
+                Console.WriteLine("[4] Medicine Claim");
+                Console.WriteLine("[5] Exit");
+
+                Console.Write("\nEnter your choice: ");
+
+                if (int.TryParse(Console.ReadLine(), out int servicesChoice))
+                {
+                    if (IsAlreadyQueued())
+                    {
+                        Console.WriteLine("\nYou are already in a queue.");
+                        Console.ReadKey();
+                        return;
+                    }
+
+                    switch (servicesChoice)
+                    {
+                        case 1:
+                            consultationQueue.Enqueue(currentUser);
+                            serviceCount["Consultation"]++;
+                            queuedPatients.Add(QueueFormat(currentUser, "Consultation"));
+                            Save("queues.txt", queuedPatients);
+                            break;
+
+                        case 2:
+                            vaccinationQueue.Enqueue(currentUser);
+                            serviceCount["Vaccination"]++;
+                            queuedPatients.Add(QueueFormat(currentUser, "Vaccination"));
+                            Save("queues.txt", queuedPatients);
+                            break;
+
+                        case 3:
+                            maternalcareQueue.Enqueue(currentUser);
+                            serviceCount["Maternal Care"]++;
+                            queuedPatients.Add(QueueFormat(currentUser, "Maternal Care"));
+                            Save("queues.txt", queuedPatients);
+                            break;
+
+                        case 4:
+                            medicineclaimQueue.Enqueue(currentUser);
+                            serviceCount["Medicine Claim"]++;
+                            queuedPatients.Add(QueueFormat(currentUser, "Medicine Claim"));
+                            Save("queues.txt", queuedPatients);
+                            break;
+
+                        case 5:
+                            return;
+
+                        default:
+                            InvalidInput();
+                            break;
+                    }
+                }
+
+                else
+                {
+                    InvalidInput();
+                }
+
+            }
         }
 
         static void HealthWorkerDashBoard()
         {
+            while (true)
+            {
+                HeaderDisplay("HEALTH WORKER DASHBOARD");
+                Console.WriteLine($"\nWelcome, {currentUser}");
+                Console.WriteLine("\n[1] View Queue Board");
+                Console.WriteLine("[2] Queue Handling");
+                Console.WriteLine("[3] Priority Patient Tracking");
+                Console.WriteLine("[4] Community Health Analytics");
+                Console.WriteLine("[5] Logout");
 
-        }
+                Console.Write("\nEnter your choice: ");
+
+                if (int.TryParse(Console.ReadLine(), out int workerChoice))
+                {
+                    switch (workerChoice)
+                    {
+                        /*case 1:
+                            ViewQueueBoard();
+                            break;
+
+                        case 2:
+                            QueueHandling();
+                            break;
+
+                        case 3:
+                            PriorityPatientTracking();
+                            break;
+
+                        case 4:
+                            CommunityHealthAnalytics();
+                            break;*/
+
+                        case 5:
+                            return;
+
+                        default:
+                            InvalidInput();
+                            break;
+                    }
+                }
+
+                else
+                {
+                    InvalidInput();
+                }
+            }
+        } 
 
         static void CreateFileIfNotExisting(string fileName)
         {
@@ -221,6 +385,11 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             CreateFileIfNotExisting("queues.txt");
             CreateFileIfNotExisting("analytics.txt");
             CreateFileIfNotExisting("reports.txt");
+
+            if (Load("workers.txt").Count == 0)
+            {
+                DefaultWorkers();
+            }
         }
 
         static void InvalidInput()
@@ -249,6 +418,14 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             return false;
         }
 
+        static bool IsAlreadyQueued()
+        {
+            return consultationQueue.Contains(currentUser) ||
+                   vaccinationQueue.Contains(currentUser) ||
+                   maternalcareQueue.Contains(currentUser) ||
+                   medicineclaimQueue.Contains(currentUser);
+        }
+
         static List<string> Load(string fileName)
         {
             if (!File.Exists(fileName))
@@ -274,6 +451,17 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             return $"{userName}|{userPassword}";
         }
 
+        static (string userName, string chosenService) Queue(string line)
+        {
+            string[] split = line.Split('|');
+            return (split[0], split[1]);
+        }
+
+        static string QueueFormat(string userName, string chosenService)
+        {
+            return $"{userName}|{chosenService}";
+        }
+
         static void HeaderDisplay(string title)
         {
             Console.Clear();
@@ -282,6 +470,13 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             Console.WriteLine($"|{title.PadLeft((50 + title.Length) / 2).PadRight(50)}|");
             Console.WriteLine("+==================================================+");
             Console.ResetColor();
+        }
+
+        static void DefaultWorkers()
+        {
+            var defaultWorkers = new List<string>();
+            defaultWorkers.Add(UserFormat("admin", "1234"));
+            Save("workers.txt", defaultWorkers);
         }
     }
 }
