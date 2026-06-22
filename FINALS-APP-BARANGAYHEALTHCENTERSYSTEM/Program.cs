@@ -18,8 +18,17 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
         static Dictionary<string, int> serviceCount = new Dictionary<string, int>();
         static Dictionary<string, int> priorityStats = new Dictionary<string, int>();
         static int[] hourlyPatients = new int[24];
+        static string currentUser = "";
 
         static void Main(string[] args)
+        {
+            InitializeFiles();
+            MainMenu();
+            
+
+        }
+
+        static void MainMenu()
         {
             while (true)
             {
@@ -36,18 +45,18 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                 Console.WriteLine("[2] Health Worker");
                 Console.WriteLine("[3] Exit");
 
-                Console.Write("\nEnter your choice: "); 
+                Console.Write("\nEnter your choice: ");
 
                 if (int.TryParse(Console.ReadLine(), out int roleChoice))
                 {
                     switch (roleChoice)
                     {
                         case 1:
-                            PatientLRM();
+                            PatientPortal();
                             break;
 
                         case 2:
-                            HealthWorkerLRM();
+                            HealthWorkerPortal();
                             break;
 
                         case 3:
@@ -63,53 +72,137 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                 {
                     InvalidInput();
                 }
-
-                
             }
         }
 
-        static void PatientLRM()
+        static void PatientPortal()
         {
-
-        }
-
-        static void HealthWorkerLRM() 
-        {
-
-        }
-
-        static void RegisterUser(string userRole)
-        {
-            List<string> users  = new List<string>();
-            if (userRole == "patient")
+            while (true)
             {
-                users = Load("patients.txt");
-            }
-            
-            else if (userRole == "worker")
-            {
-                users = Load("workers.txt");
-            }
+                HeaderDisplay("PATIENT PORTAL");
+                Console.WriteLine("\n[1] Login");
+                Console.WriteLine("[2] Register");
+                Console.WriteLine("[3] Exit");
 
-            Console.Write("Enter your Username: "); string userName = Console.ReadLine().Trim();
-            Console.Write("Enter your Password: "); string userPassword = Console.ReadLine().Trim();
+                Console.Write("\nEnter your choice: ");
+
+                if (int.TryParse(Console.ReadLine(), out int patientPortal))
+                {
+                    switch (patientPortal)
+                    {
+                        case 1:
+                            if(Login("patients.txt"))
+                            {
+                                PatientDashboard();
+                            }
+
+                            break;
+
+                        case 2:
+                            Register("patients.txt");
+                            break;
+
+                        case 3:
+                            return;
+
+                        default:
+                            InvalidInput();
+                            break;
+                    }
+                }
+            }
+        }
+
+        static void HealthWorkerPortal() 
+        {
+            while (true) 
+            {
+                HeaderDisplay("HEALTH WORKER PORTAL");
+                Console.WriteLine("\n[1] Login");
+                Console.WriteLine("[2] Register");
+                Console.WriteLine("[3] Exit");
+
+                Console.Write("\nEnter your choice: ");
+
+                if (int.TryParse(Console.ReadLine(), out int healthworkerPortal))
+                {
+                    switch (healthworkerPortal)
+                    {
+                        case 1:
+                            if (Login("workers.txt"))
+                            {
+                                HealthWorkerDashboard();
+                            }
+                            break;
+
+                        case 2:
+                            Register("workers.txt");
+                            break;
+
+                        case 3:
+                            return;
+
+                        default:
+                            InvalidInput();
+                            break;
+                    }
+                }
+            }
+        }
+
+        static bool Login(string fileName)  
+        {
+            List<string> users = Load(fileName);
+
+            HeaderDisplay("LOGIN MENU");
+            Console.Write("\nEnter your name: "); string userName = Console.ReadLine();
+            Console.Write("Enter your Password: "); string userPassword = Console.ReadLine();
 
             for (int i = 0; i < users.Count; i++)
             {
                 var user = User(users[i]);
 
-                if (user.userName.Trim().ToLower() == userName.Trim().ToLower() && user.userPassword.Trim() == userPassword)
+                if (user.userName ==  userName && user.userPassword == userPassword)
                 {
-                    Console.WriteLine("Account already exists.");
-                    Console.ReadKey();
-                    return;
+                    Console.WriteLine("Login Successful!");
+                    currentUser = userName;
+                    return true;
                 }
             }
+            Console.WriteLine("Invalid Login");
+            Console.ReadKey();
+            return false;
+        }
+
+        static void Register(string fileName)
+        {
+            List<string> users = Load(fileName);
+
+            HeaderDisplay("REGISTER MENU");
+            Console.Write("\nEnter your Name: "); string userName = Console.ReadLine();
+
+            if (NameExists(fileName, userName))
+            {
+                Console.WriteLine("Name already exists.");
+                return;
+            }
+
+            Console.Write("Enter your Password: "); string userPassword = Console.ReadLine();
 
             users.Add(UserFormat(userName, userPassword));
-            /*Save("");*/
+            Save(fileName, users);
+            Console.WriteLine("User registered successfully.");
+            Console.ReadKey();
+        }
 
-            
+        static void PatientDashboard()
+        {
+
+        }
+
+        static void HealthWorkerDashBoard()
+        {
+
         }
 
         static void CreateFileIfNotExisting(string fileName)
@@ -129,6 +222,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             CreateFileIfNotExisting("analytics.txt");
             CreateFileIfNotExisting("reports.txt");
         }
+
         static void InvalidInput()
         {
             Console.ForegroundColor = ConsoleColor.Red;
@@ -136,6 +230,23 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             Console.WriteLine("Invalid input. Please try again");
             Console.ResetColor();
             Thread.Sleep(1000);
+        }
+
+        static bool NameExists(string fileName, string name) 
+        {
+            List<string> users = Load(fileName);
+
+            for (int i = 0; i < users.Count; i++)
+            {
+                var user = User(users[i]);
+
+                if (user.userName == name)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         static List<string> Load(string fileName)
@@ -166,9 +277,11 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
         static void HeaderDisplay(string title)
         {
             Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("+==================================================+");
-            Console.WriteLine($"|                     {title}                      |");
+            Console.WriteLine($"|{title.PadLeft((50 + title.Length) / 2).PadRight(50)}|");
             Console.WriteLine("+==================================================+");
+            Console.ResetColor();
         }
     }
 }
