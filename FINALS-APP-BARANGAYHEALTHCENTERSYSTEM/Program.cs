@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Threading;
 
 namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 {
@@ -17,15 +18,64 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
         static Dictionary<string, int> serviceCount = new Dictionary<string, int>();
         static Dictionary<string, int> priorityStats = new Dictionary<string, int>();
         static int[] hourlyPatients = new int[24];
+
         static void Main(string[] args)
         {
-            Console.WriteLine(@"
- _  _  ____   __   __   ____  _  _  __    __  __ _  ____    __    ____ 
-/ )( \(  __) / _\ (  ) (_  _)/ )( \(  )  (  )(  ( \(  __)  (  )  (  _ \
-) __ ( ) _) /    \/ (_/\ )(  ) __ (/ (_/\ )( /    / ) _)   / (_/\ ) __/
-\_)(_/(____)\_/\_/\____/(__) \_)(_/\____/(__)\_)__)(____)  \____/(__)  
+            while (true)
+            {
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine(@"
+                 _  _  ____   __   __   ____  _  _  __    __  __ _  ____    __    ____ 
+                / )( \(  __) / _\ (  ) (_  _)/ )( \(  )  (  )(  ( \(  __)  (  )  (  _ \
+                ) __ ( ) _) /    \/ (_/\ )(  ) __ (/ (_/\ )( /    / ) _)   / (_/\ ) __/
+                \_)(_/(____)\_/\_/\____/(__) \_)(_/\____/(__)\_)__)(____)  \____/(__)  
 ");
-            Console.ReadKey();
+                Console.ResetColor();
+                Console.WriteLine("\n[1] Patient");
+                Console.WriteLine("[2] Health Worker");
+                Console.WriteLine("[3] Exit");
+
+                Console.Write("\nEnter your choice: "); 
+
+                if (int.TryParse(Console.ReadLine(), out int roleChoice))
+                {
+                    switch (roleChoice)
+                    {
+                        case 1:
+                            PatientLRM();
+                            break;
+
+                        case 2:
+                            HealthWorkerLRM();
+                            break;
+
+                        case 3:
+                            return;
+
+                        default:
+                            InvalidInput();
+                            break;
+                    }
+                }
+
+                else
+                {
+                    InvalidInput();
+                }
+
+                
+            }
+        }
+
+        static void PatientLRM()
+        {
+
+        }
+
+        static void HealthWorkerLRM() 
+        {
+
         }
 
         static void RegisterUser(string userRole)
@@ -57,7 +107,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             }
 
             users.Add(UserFormat(userName, userPassword));
-            Save("")
+            /*Save("");*/
 
             
         }
@@ -78,6 +128,14 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             CreateFileIfNotExisting("queues.txt");
             CreateFileIfNotExisting("analytics.txt");
             CreateFileIfNotExisting("reports.txt");
+        }
+        static void InvalidInput()
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("\n[ERROR]");
+            Console.WriteLine("Invalid input. Please try again");
+            Console.ResetColor();
+            Thread.Sleep(1000);
         }
 
         static List<string> Load(string fileName)
