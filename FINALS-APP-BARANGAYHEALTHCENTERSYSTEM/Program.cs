@@ -10,13 +10,29 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 {
     internal class Program
     {
-        static Queue<string> consultationQueue = new Queue<string>();
-        static Queue<string> vaccinationQueue = new Queue<string>();
-        static Queue<string> maternalcareQueue = new Queue<string>();
-        static Queue<string> medicineclaimQueue = new Queue<string>();
+        static Queue<string> consultationRegularQueue = new Queue<string>();
+        static Queue<string> consultationPriorityQueue = new Queue<string>();
+        static Queue<string> vaccinationRegularQueue = new Queue<string>();
+        static Queue<string> vaccinationPriorityQueue = new Queue<string>();
+        static Queue<string> maternalcareRegularQueue = new Queue<string>();
+        static Queue<string> maternalcarePriorityQueue = new Queue<string>();
+        static Queue<string> medicineclaimRegularQueue = new Queue<string>();
+        static Queue<string> medicineclaimPriorityQueue = new Queue<string>();
         static Stack<string> actionHistory = new Stack<string>();
-        static Dictionary<string, int> serviceCount = new Dictionary<string, int>();
-        static Dictionary<string, int> priorityStats = new Dictionary<string, int>();
+        static Dictionary<string, int> serviceCount = new Dictionary<string, int>()
+        {
+            { "Consultation", 0 },
+            { "Vaccination", 0 },
+            { "Maternal Care", 0 },
+            { "Medicine Claim", 0 }
+        };
+        static Dictionary<string, int> priorityStats = new Dictionary<string, int>()
+        {
+            { "Senior Citizen", 0 },
+            { "PWD", 0 },
+            { "Pregnant", 0 },
+            { "Emergency", 0 }
+        };
         static int[] hourlyPatients = new int[24];
         static string currentUser = "";
 
@@ -89,7 +105,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                     switch (patientPortal)
                     {
                         case 1:
-                            if(Login("patients.txt"))
+                            if (Login("patients.txt"))
                             {
                                 PatientDashboard();
                             }
@@ -116,9 +132,9 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             }
         }
 
-        static void HealthWorkerPortal() 
+        static void HealthWorkerPortal()
         {
-            while (true) 
+            while (true)
             {
                 HeaderDisplay("HEALTH WORKER PORTAL");
                 Console.WriteLine("\n[1] Login");
@@ -158,7 +174,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             }
         }
 
-        static bool Login(string fileName)  
+        static bool Login(string fileName)
         {
             List<string> users = Load(fileName);
 
@@ -170,7 +186,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             {
                 var user = User(users[i]);
 
-                if (user.userName ==  userName && user.userPassword == userPassword)
+                if (user.userName == userName && user.userPassword == userPassword)
                 {
                     Console.WriteLine("Login Successful!");
                     currentUser = userName;
@@ -224,13 +240,13 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                             SelectServices();
                             break;
 
-                       /* case 2:
-                            QueueProgressTracker();
-                            break;
+                        /* case 2:
+                             QueueProgressTracker();
+                             break;
 
-                        case 3:
-                            HealthVisitHistory();
-                            break;*/
+                         case 3:
+                             HealthVisitHistory();
+                             break;*/
 
                         case 4:
                             return;
@@ -275,32 +291,44 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                     switch (servicesChoice)
                     {
                         case 1:
-                            consultationQueue.Enqueue(currentUser);
-                            serviceCount["Consultation"]++;
-                            queuedPatients.Add(QueueFormat(currentUser, "Consultation"));
-                            Save("queues.txt", queuedPatients);
-                            break;
+                            {
+                                string patientType = PriorityType();
+                                JoinQueue(consultationRegularQueue,consultationPriorityQueue, "Consultation", patientType);
+
+                                Console.WriteLine("\nSuccessfully added to queue.");
+                                Console.ReadKey();
+                                return;
+                            }
 
                         case 2:
-                            vaccinationQueue.Enqueue(currentUser);
-                            serviceCount["Vaccination"]++;
-                            queuedPatients.Add(QueueFormat(currentUser, "Vaccination"));
-                            Save("queues.txt", queuedPatients);
-                            break;
+                            {
+                                string patientType = PriorityType();
+                                JoinQueue(vaccinationRegularQueue, vaccinationPriorityQueue, "Vaccination", patientType);
+
+                                Console.WriteLine("\nSuccessfully added to queue.");
+                                Console.ReadKey();
+                                return;
+                            }
 
                         case 3:
-                            maternalcareQueue.Enqueue(currentUser);
-                            serviceCount["Maternal Care"]++;
-                            queuedPatients.Add(QueueFormat(currentUser, "Maternal Care"));
-                            Save("queues.txt", queuedPatients);
-                            break;
+                            {
+                                string patientType = PriorityType();
+                                JoinQueue(maternalcareRegularQueue, maternalcarePriorityQueue, "Maternal Care", patientType);
+
+                                Console.WriteLine("\nSuccessfully added to queue.");
+                                Console.ReadKey();
+                                return;
+                            }
 
                         case 4:
-                            medicineclaimQueue.Enqueue(currentUser);
-                            serviceCount["Medicine Claim"]++;
-                            queuedPatients.Add(QueueFormat(currentUser, "Medicine Claim"));
-                            Save("queues.txt", queuedPatients);
-                            break;
+                            {
+                                string patientType = PriorityType();
+                                JoinQueue(medicineclaimRegularQueue, medicineclaimPriorityQueue, "Medicine Claim", patientType);
+
+                                Console.WriteLine("\nSuccessfully added to queue.");
+                                Console.ReadKey();
+                                return;
+                            }
 
                         case 5:
                             return;
@@ -367,7 +395,16 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                     InvalidInput();
                 }
             }
-        } 
+        }
+
+        static void ViewQueueBoard()
+        {
+            HeaderDisplay("QUEUE BOARD");
+            QueueDisplayer("CONSULTATION QUEUE", consultationRegularQueue, consultationPriorityQueue);
+            QueueDisplayer("VACCINATION QUEUE", vaccinationRegularQueue, vaccinationPriorityQueue);
+            QueueDisplayer("MATERNAL CARE QUEUE", maternalcareRegularQueue, maternalcarePriorityQueue);
+            QueueDisplayer("MEDICINE CLAIM QUEUE", medicineclaimRegularQueue, medicineclaimPriorityQueue);
+        }
 
         static void CreateFileIfNotExisting(string fileName)
         {
@@ -401,7 +438,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             Thread.Sleep(1000);
         }
 
-        static bool NameExists(string fileName, string name) 
+        static bool NameExists(string fileName, string name)
         {
             List<string> users = Load(fileName);
 
@@ -418,12 +455,98 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             return false;
         }
 
+        static bool UserExistsInQueue(Queue<string> queue)
+        {
+            foreach (string record in queue)
+            {
+                if (Queue(record).userName == currentUser)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         static bool IsAlreadyQueued()
         {
-            return consultationQueue.Contains(currentUser) ||
-                   vaccinationQueue.Contains(currentUser) ||
-                   maternalcareQueue.Contains(currentUser) ||
-                   medicineclaimQueue.Contains(currentUser);
+            return UserExistsInQueue(consultationPriorityQueue) || UserExistsInQueue(consultationRegularQueue) ||
+                   UserExistsInQueue(vaccinationPriorityQueue) || UserExistsInQueue(vaccinationRegularQueue) ||
+                   UserExistsInQueue(maternalcarePriorityQueue) || UserExistsInQueue(maternalcareRegularQueue) ||
+                   UserExistsInQueue(medicineclaimPriorityQueue) || UserExistsInQueue(medicineclaimRegularQueue);
+        }
+
+        static string PriorityType()
+        {
+            while (true)
+            {
+                Console.WriteLine("\n=====Patient Type=====");
+                Console.WriteLine("[1] Regular");
+                Console.WriteLine("[2] Senior Citizen");
+                Console.WriteLine("[3] PWD");
+                Console.WriteLine("[4] Pregnant");
+                Console.WriteLine("[5] Emergency");
+
+                Console.Write("\nEnter your choice: ");
+
+                if (int.TryParse(Console.ReadLine(), out int typeChoice))
+                {
+                    switch (typeChoice)
+                    {
+                        case 1:
+                            return "Regular";
+
+                        case 2:
+                            return "Senior Citizen";
+
+                        case 3:
+                            return "PWD";
+
+                        case 4:
+                            return "Pregnant";
+
+                        case 5:
+                            return "Emergency";
+                    }
+                }
+
+                InvalidInput();
+            }
+        }
+
+        static void JoinQueue(Queue<string> regularQueue, Queue<string> priorityQueue, string chosenService, string patientType)
+        {
+            List<string> queuedPatients = Load("queues.txt");
+            string record = QueueFormat(currentUser, chosenService, patientType);
+
+            if (patientType == "Regular")
+            {
+                regularQueue.Enqueue(record);
+            }
+
+            else
+            {
+                priorityQueue.Enqueue(record);
+            }
+
+            
+            UpdateServiceCount(chosenService);
+            UpdatePriorityStats(patientType);
+            queuedPatients.Add(record);
+            Save("queues.txt", queuedPatients);
+        }
+
+        static void UpdatePriorityStats(string patientType)
+        {
+            if (patientType != "Regular")
+            {
+                priorityStats[patientType]++;
+            }
+        }
+
+        static void UpdateServiceCount(string service)
+        {
+            serviceCount[service]++;
         }
 
         static List<string> Load(string fileName)
@@ -446,20 +569,20 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             return (split[0], split[1]);
         }
 
-        static string UserFormat(string userName, string userPassword) 
+        static string UserFormat(string userName, string userPassword)
         {
             return $"{userName}|{userPassword}";
         }
 
-        static (string userName, string chosenService) Queue(string line)
+        static (string userName, string chosenService, string patientType) Queue(string line)
         {
             string[] split = line.Split('|');
-            return (split[0], split[1]);
+            return (split[0], split[1], split[2]);
         }
 
-        static string QueueFormat(string userName, string chosenService)
+        static string QueueFormat(string userName, string chosenService, string patientType)
         {
-            return $"{userName}|{chosenService}";
+            return $"{userName}|{chosenService}|{patientType}";
         }
 
         static void HeaderDisplay(string title)
@@ -470,6 +593,38 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             Console.WriteLine($"|{title.PadLeft((50 + title.Length) / 2).PadRight(50)}|");
             Console.WriteLine("+==================================================+");
             Console.ResetColor();
+        }
+
+        static void QueueDisplayer(string title, Queue<string> regularQueue, Queue<string> priorityQueue)
+        {
+            Console.WriteLine($"\n{title}");
+            Console.WriteLine("------------------------------");
+
+            int position = 1;
+
+            Console.WriteLine("\nPRIORITY PATIENTS");
+
+            foreach (string record in priorityQueue)
+            {
+                var patient = Queue(record);
+
+                Console.WriteLine(
+                    $"{position}. {patient.userName} ({patient.patientType})");
+
+                position++;
+            }
+
+            Console.WriteLine("\nREGULAR PATIENTS");
+
+            foreach (string record in regularQueue)
+            {
+                var patient = Queue(record);
+
+                Console.WriteLine(
+                    $"{position}. {patient.userName} ({patient.patientType})");
+
+                position++;
+            }
         }
 
         static void DefaultWorkers()
