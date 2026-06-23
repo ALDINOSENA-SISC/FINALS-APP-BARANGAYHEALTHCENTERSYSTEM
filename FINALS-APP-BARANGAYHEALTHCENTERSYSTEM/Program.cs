@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Threading;
+using System.Globalization;
 
 namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 {
@@ -35,6 +36,10 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
         };
         static int[] hourlyPatients = new int[24];
         static string currentUser = "";
+        static string currentConsultationPatient = "";
+        static string currentVaccinationPatient = "";
+        static string currentMaternalCarePatient = "";
+        static string currentMedicineClaimPatient = "";
 
         static void Main(string[] args)
         {
@@ -193,7 +198,10 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                     return true;
                 }
             }
-            Console.WriteLine("Invalid Login");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("\n[ERROR]");
+            Console.WriteLine("Account doesn't exist. Please try again or register an account");
+            Console.ResetColor();
             Console.ReadKey();
             return false;
         }
@@ -293,7 +301,8 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                         case 1:
                             {
                                 string patientType = PriorityType();
-                                JoinQueue(consultationRegularQueue,consultationPriorityQueue, "Consultation", patientType);
+                                var schedule = GetSchedule();
+                                JoinQueue(consultationRegularQueue,consultationPriorityQueue, "Consultation", patientType, schedule.date, schedule.time);
 
                                 Console.WriteLine("\nSuccessfully added to queue.");
                                 Console.ReadKey();
@@ -303,7 +312,8 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                         case 2:
                             {
                                 string patientType = PriorityType();
-                                JoinQueue(vaccinationRegularQueue, vaccinationPriorityQueue, "Vaccination", patientType);
+                                var schedule = GetSchedule();
+                                JoinQueue(vaccinationRegularQueue, vaccinationPriorityQueue, "Vaccination", patientType, schedule.date, schedule.time);
 
                                 Console.WriteLine("\nSuccessfully added to queue.");
                                 Console.ReadKey();
@@ -313,7 +323,8 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                         case 3:
                             {
                                 string patientType = PriorityType();
-                                JoinQueue(maternalcareRegularQueue, maternalcarePriorityQueue, "Maternal Care", patientType);
+                                var schedule = GetSchedule();
+                                JoinQueue(maternalcareRegularQueue, maternalcarePriorityQueue, "Maternal Care", patientType, schedule.date, schedule.time);
 
                                 Console.WriteLine("\nSuccessfully added to queue.");
                                 Console.ReadKey();
@@ -323,7 +334,8 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                         case 4:
                             {
                                 string patientType = PriorityType();
-                                JoinQueue(medicineclaimRegularQueue, medicineclaimPriorityQueue, "Medicine Claim", patientType);
+                                var schedule = GetSchedule();
+                                JoinQueue(medicineclaimRegularQueue, medicineclaimPriorityQueue, "Medicine Claim", patientType, schedule.date, schedule.time);
 
                                 Console.WriteLine("\nSuccessfully added to queue.");
                                 Console.ReadKey();
@@ -347,6 +359,38 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             }
         }
 
+        static int GetQueuePosition(Queue<string> queue, string userName)
+        {
+            List<string> record = queue.ToList();
+
+            for (int i = 0; i < record.Count; i++)
+            {
+                if (Queue(record[i]).userName == userName)
+                {
+                    return i + 1;
+                }
+            }
+
+            return -1;
+        }
+
+        static string GetCurrentService()
+        {
+            List<string> queuedPatients = Load("queues.txt");
+
+            for(int i = 0; i < queuedPatients.Count; i++)
+            {
+                var patient = Queue(queuedPatients[i]);
+
+                if (patient.userName == currentUser)
+                {
+                    return patient.chosenService;
+                }
+            }
+
+            return "";
+        }
+
         static void HealthWorkerDashBoard()
         {
             while (true)
@@ -365,7 +409,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                 {
                     switch (workerChoice)
                     {
-                        /*case 1:
+                        case 1:
                             ViewQueueBoard();
                             break;
 
@@ -373,7 +417,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                             QueueHandling();
                             break;
 
-                        case 3:
+                        /*case 3:
                             PriorityPatientTracking();
                             break;
 
@@ -404,6 +448,326 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             QueueDisplayer("VACCINATION QUEUE", vaccinationRegularQueue, vaccinationPriorityQueue);
             QueueDisplayer("MATERNAL CARE QUEUE", maternalcareRegularQueue, maternalcarePriorityQueue);
             QueueDisplayer("MEDICINE CLAIM QUEUE", medicineclaimRegularQueue, medicineclaimPriorityQueue);
+        }
+
+        static void QueueHandling()
+        {
+            while (true)
+            {
+                HeaderDisplay("QUEUE HANDLING");
+                Console.WriteLine("\n[1] Call Next Patient");
+                Console.WriteLine("[2] Complete Service");
+                Console.WriteLine("[3] Skip Patient");
+                Console.WriteLine("[4] Undo Last Action");
+                Console.WriteLine("[5] Back");
+
+                if (int.TryParse(Console.ReadLine(), out int queueChoice))
+                {
+                    switch (queueChoice)
+                    {
+                        case 1:
+                            CallNextPatient();
+                            break;
+
+                        case 2:
+                            CompleteService();
+                            break;
+
+                        /*case 3:
+                            SkipPatient;
+                            break;
+
+                        case 4:
+                            UndoLastAction();
+                            break;*/
+
+                        default:
+                            InvalidInput();
+                            break;
+                    }
+                }
+
+                else
+                {
+                    InvalidInput();
+                }
+            }
+        }
+
+        static int ServiceHandling()
+        {
+            HeaderDisplay("SERVICE SELECTION");
+            Console.WriteLine("\n[1] Consultation");
+            Console.WriteLine("[2] Vaccination");
+            Console.WriteLine("[3] Maternal Care");
+            Console.WriteLine("[4] Medicine Claim");
+            Console.Write("\nSelect Service: ");
+
+            if (int.TryParse(Console.ReadLine(), out int choice))
+            {
+                return choice;
+            }
+
+            return -1;
+        }
+
+        static void CallNextPatient()
+        {
+            HeaderDisplay("CALL NEXT PATIENT");
+
+            int service = ServiceHandling();
+
+            switch (service)
+            {
+                case 1:
+                    {
+                        if(currentConsultationPatient != "")
+                        {
+                            Console.WriteLine("\nA patient is already being served.");
+                            Console.ReadKey();
+                            return;
+                        }
+
+                        currentConsultationPatient = PeekNextPatient(consultationRegularQueue, consultationPriorityQueue);
+
+                        if (currentConsultationPatient == "")
+                        {
+                            Console.WriteLine("\nNo patients in queue.");
+                            Console.ReadKey();
+                            return;
+                        }
+
+                        var patient = Queue(currentConsultationPatient);
+
+                        Console.WriteLine($"\nNow Serving: {patient.userName}");
+                        break;
+                    }
+
+                case 2:
+                    {
+                        if(currentVaccinationPatient != "")
+                        {
+                            Console.WriteLine("\nA patient is already being served.");
+                            Console.ReadKey();
+                            return;
+                        }
+
+                        currentVaccinationPatient = PeekNextPatient(vaccinationRegularQueue, vaccinationPriorityQueue);
+
+                        if (currentVaccinationPatient == "")
+                        {
+                            Console.WriteLine("\nNo patients in queue.");
+                            Console.ReadKey();
+                            return;
+                        }
+
+                        var patient = Queue(currentVaccinationPatient);
+
+                        Console.WriteLine($"\nNow Serving: {patient.userName}");
+                        break;
+                    }
+
+                case 3:
+                    {
+                        if(currentMaternalCarePatient != "")
+                        {
+                            Console.WriteLine("\nA patient is already being served.");
+                            Console.ReadKey();
+                            return;
+                        }
+
+                        currentMaternalCarePatient = PeekNextPatient(maternalcareRegularQueue, maternalcarePriorityQueue);
+
+                        if (currentMaternalCarePatient == "")
+                        {
+                            Console.WriteLine("\nNo patients in queue.");
+                            Console.ReadKey();
+                            return;
+                        }
+
+                        var patient = Queue(currentMaternalCarePatient);
+
+                        Console.WriteLine(
+                            $"\nNow Serving: {patient.userName}");
+                        break;
+                    }
+
+                case 4:
+                    {
+                        if(currentMedicineClaimPatient != "")
+                        {
+                            Console.WriteLine("\nA patient is already being served.");
+                            Console.ReadKey();
+                            return;
+                        }
+
+                        currentMedicineClaimPatient = PeekNextPatient(medicineclaimRegularQueue, medicineclaimPriorityQueue);
+
+                        if (currentMedicineClaimPatient == "")
+                        {
+                            Console.WriteLine("\nNo patients in queue.");
+                            Console.ReadKey();
+                            return;
+                        }
+
+                        var patient = Queue(currentMedicineClaimPatient);
+
+                        Console.WriteLine(
+                            $"\nNow Serving: {patient.userName}");
+                        break;
+                    }
+
+                default:
+                    InvalidInput();
+                    return;
+            }
+
+            Console.WriteLine("\nPatient has been called.");
+            Console.ReadKey();
+        }
+
+        static void CompleteService()
+        {
+            HeaderDisplay("COMPLETE SERVICE");
+
+            int service = ServiceHandling();
+
+            switch(service)
+            {
+                case 1:
+                    {
+                        if (FinishService(consultationRegularQueue, consultationPriorityQueue, currentConsultationPatient))
+                        {
+                            currentConsultationPatient = "";
+                        }
+
+                        break;
+                    }
+
+                case 2:
+                    {
+                        if (FinishService(vaccinationRegularQueue, vaccinationRegularQueue, currentVaccinationPatient))
+                        {
+                            currentVaccinationPatient = "";
+                        }
+
+                        break;
+                    }
+
+                case 3:
+                    {
+                        if (FinishService(maternalcareRegularQueue, maternalcareRegularQueue, currentMaternalCarePatient))
+                        {
+                            currentMaternalCarePatient = "";
+                        }
+
+                        break;
+                    }
+
+                case 4:
+                    {
+                        if (FinishService(medicineclaimRegularQueue, medicineclaimRegularQueue, currentMedicineClaimPatient))
+                        {
+                            currentMedicineClaimPatient = "";
+                        }
+
+                        break;
+                    }
+
+                default:
+                    InvalidInput();
+                    break;
+            }
+        }
+
+        static string SkipPatient(Queue<string> regularQueue, Queue<string> priorityQueue)
+        {
+            if (priorityQueue.Count > 0)
+            {
+                string patient = priorityQueue.Dequeue();
+                priorityQueue.Enqueue(patient);
+                return patient;
+            }
+
+            if (regularQueue.Count > 0)
+            {
+                string patient = regularQueue.Dequeue();
+                regularQueue.Enqueue(patient);
+                return patient;
+            }
+
+            return "";
+        }
+
+        /*static string Skip
+        static string SkipService()
+        {
+            HeaderDisplay("SKIP PATIENT");
+
+            int service = ServiceHandling();
+
+            switch (service)
+            {
+                case 1:
+                    {
+                        if (currentConsultationPatient == "")
+                        {
+
+                        }
+                    }
+            }
+
+        }*/
+
+        static bool FinishService(Queue<string> regularQueue, Queue<string> priorityQueue, string currentPatient)
+        {
+            if (currentPatient == "")
+            {
+                Console.WriteLine("\nNo patient is currently being served.");
+                Console.ReadKey();
+                return false;
+            }
+
+            string completedPatient = CompletePatient(regularQueue, priorityQueue);
+            actionHistory.Push($"COMPLETE|{completedPatient}");
+
+            List<string> visits = Load("visits.txt");
+            visits.Add(completedPatient);
+            Save("visits.txt", visits);
+
+            Console.WriteLine("\nService completed successfully.");
+            Console.ReadKey();
+            return true;
+        }
+
+        static string PeekNextPatient(Queue<string> regularQueue, Queue<string> priorityQueue)
+        {
+            if (priorityQueue.Count > 0)
+            {
+                return priorityQueue.Peek();
+            }
+
+            if (regularQueue.Count > 0)
+            {
+                return regularQueue.Peek();
+            }
+
+            return "";
+        }
+
+        static string CompletePatient(Queue<string> priorityQueue, Queue<string> regularQueue)
+        {
+            if (priorityQueue.Count > 0)
+            {
+                return priorityQueue.Dequeue();
+            }
+
+            if (regularQueue.Count > 0)
+            {
+                return regularQueue.Dequeue();
+            }
+
+            return "";
         }
 
         static void CreateFileIfNotExisting(string fileName)
@@ -514,10 +878,18 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             }
         }
 
-        static void JoinQueue(Queue<string> regularQueue, Queue<string> priorityQueue, string chosenService, string patientType)
+        static (string date, string time) GetSchedule()
+        {
+            Console.Write("Enter Date (MM/DD/YY): "); string date = Console.ReadLine();
+            Console.Write("Enter Time (HH:MM AM/PM): "); string time = Console.ReadLine();
+
+            return (date, time);
+        }
+
+        static void JoinQueue(Queue<string> regularQueue, Queue<string> priorityQueue, string chosenService, string patientType, string date, string time)
         {
             List<string> queuedPatients = Load("queues.txt");
-            string record = QueueFormat(currentUser, chosenService, patientType);
+            string record = QueueFormat(currentUser, chosenService, patientType, date, time);
 
             if (patientType == "Regular")
             {
@@ -574,15 +946,15 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             return $"{userName}|{userPassword}";
         }
 
-        static (string userName, string chosenService, string patientType) Queue(string line)
+        static (string userName, string chosenService, string patientType, string date, string time) Queue(string line)
         {
             string[] split = line.Split('|');
-            return (split[0], split[1], split[2]);
+            return (split[0], split[1], split[2], split[3], split[4]);
         }
 
-        static string QueueFormat(string userName, string chosenService, string patientType)
+        static string QueueFormat(string userName, string chosenService, string patientType, string date, string time)
         {
-            return $"{userName}|{chosenService}|{patientType}";
+            return $"{userName}|{chosenService}|{patientType}|{date}|{time}";
         }
 
         static void HeaderDisplay(string title)
@@ -604,26 +976,40 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
             Console.WriteLine("\nPRIORITY PATIENTS");
 
-            foreach (string record in priorityQueue)
+            if (priorityQueue.Count == 0) 
             {
-                var patient = Queue(record);
+                Console.WriteLine("NONE");
+            }
 
-                Console.WriteLine(
-                    $"{position}. {patient.userName} ({patient.patientType})");
+            else
+            {
+                foreach (string record in priorityQueue)
+                {
+                    var patient = Queue(record);
 
-                position++;
+                    Console.WriteLine($"{position}. {patient.userName} ({patient.patientType})");
+
+                    position++;
+                }
             }
 
             Console.WriteLine("\nREGULAR PATIENTS");
 
-            foreach (string record in regularQueue)
+            if (regularQueue.Count == 0)
             {
-                var patient = Queue(record);
+                Console.WriteLine("NONE");
+            }
 
-                Console.WriteLine(
-                    $"{position}. {patient.userName} ({patient.patientType})");
+            else
+            {
+                foreach (string record in regularQueue)
+                {
+                    var patient = Queue(record);
 
-                position++;
+                    Console.WriteLine($"{position}. {patient.userName} ({patient.patientType})");
+
+                    position++;
+                }
             }
         }
 
