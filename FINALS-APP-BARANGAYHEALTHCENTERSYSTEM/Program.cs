@@ -193,7 +193,9 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             while (true)
             {
                 HeaderDisplay("PATIENT DASHBOARD");
+                Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine($"\nWelcome, {currentUser}");
+                Console.ResetColor();
                 Console.WriteLine("\n[1] Select Services");
                 Console.WriteLine("[2] View Queue Progress Tracker");
                 Console.WriteLine("[3] View Health Visit History");
@@ -238,7 +240,9 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             while (true)
             {
                 HeaderDisplay("HEALTH WORKER DASHBOARD");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine($"\nWelcome, {currentUser}");
+                Console.ResetColor();
                 Console.WriteLine("\n[1] View Queue Board");
                 Console.WriteLine("[2] Queue Handling");
                 Console.WriteLine("[3] Priority Patient Tracking");
@@ -263,9 +267,9 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                             PriorityPatientTracking();
                             break;
 
-                        /*case 4:
+                        case 4:
                             CommunityHealthAnalytics();
-                            break;*/
+                            break;
 
                         case 5:
                             return;
@@ -288,6 +292,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
         {
             if (IsAlreadyQueued())
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("\nYou are already in a queue.");
                 Console.ReadKey();
                 return;
@@ -608,7 +613,9 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             var schedule = GetSchedule();
             string queueNumber = JoinQueue(regularQueue, priorityQueue, chosenService, patientType, schedule.date, schedule.time);
 
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("\nSuccessfully added to queue.");
+            Console.ResetColor();
             Console.WriteLine($"Your Queue Number: {queueNumber}");
             Console.ReadKey();
         }
@@ -622,7 +629,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             QueueDisplayer("MATERNAL CARE QUEUE", maternalcareRegularQueue, maternalcarePriorityQueue);
             QueueDisplayer("MEDICINE CLAIM QUEUE", medicineclaimRegularQueue, medicineclaimPriorityQueue);
 
-            Console.WriteLine("Press any key to return");
+            Console.WriteLine("\nPress any key to return");
             Console.ReadKey();
         }
 
@@ -1454,19 +1461,22 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
             HeaderDisplay("REGISTER MENU");
             Console.Write("\nEnter your Name: "); string userName = Console.ReadLine();
+            Console.Write("Enter your Password: "); string userPassword = Console.ReadLine();
 
-            if (NameExists(fileName, userName))
+            if (AccountExists(fileName, userName, userPassword))
             {
-                Console.WriteLine("Name already exists.");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("\nAccount already exists.");
+                Console.ResetColor();
                 Console.ReadKey();
                 return;
             }
 
-            Console.Write("Enter your Password: "); string userPassword = Console.ReadLine();
-
             users.Add(UserFormat(userName, userPassword));
             Save(fileName, users);
-            Console.WriteLine("User registered successfully.");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("\nUser registered successfully.");
+            Console.ResetColor();
             Console.ReadKey();
         }
 
@@ -1506,7 +1516,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             Thread.Sleep(1000);
         }
 
-        static bool NameExists(string fileName, string name)
+        static bool AccountExists(string fileName, string name, string password)
         {
             List<string> users = Load(fileName);
 
@@ -1514,7 +1524,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             {
                 var user = User(users[i]);
 
-                if (user.userName == name)
+                if (user.userName == name && user.userPassword == password)
                 {
                     return true;
                 }
@@ -1703,7 +1713,9 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
         static void QueueDisplayer(string title, Queue<string> regularQueue, Queue<string> priorityQueue)
         {
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.WriteLine($"\n\n{title}");
+            Console.ResetColor();
             Console.WriteLine("------------------------------");
 
             int position = 1;
