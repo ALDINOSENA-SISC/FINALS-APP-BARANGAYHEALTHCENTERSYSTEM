@@ -644,6 +644,8 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                 Console.WriteLine("[4] Undo Last Action");
                 Console.WriteLine("[5] Back");
 
+                Console.Write("\nEnter your choice: ");
+
                 if (int.TryParse(Console.ReadLine(), out int queueChoice))
                 {
                     switch (queueChoice)
@@ -934,7 +936,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
                 string[] split = action.Split('|');
                 string actionType = split[0];
-                string record = $"{split[1]}|{split[2]}|{split[3]}|{split[4]}|{split[5]}|{split[6]}";
+                string record = $"{split[0]},{split[1]}|{split[2]}|{split[3]}|{split[4]}|{split[5]}|{split[6]}";
 
                 switch (actionType)
                 {
@@ -1295,6 +1297,8 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             foreach (var kvp in serviceCount)
                 total += kvp.Value;
 
+            int maxCount = serviceCount.Values.Max();
+
             Console.WriteLine($"\nTotal Patients Serviced: {total}");
             Console.WriteLine("\n------------------------------");
 
@@ -1302,7 +1306,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             {
                 int count = kvp.Value;
                 double percent = total > 0 ? (double)count / total * 100 : 0;
-                string bar = BuildBar(count, total, 20);
+                string bar = BuildBar(count, maxCount, 20);
 
                 Console.WriteLine($"\n  {kvp.Key,-15}: {count,4} patients  [{bar}] {percent:0.0}%");
             }
@@ -1461,16 +1465,17 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
             HeaderDisplay("REGISTER MENU");
             Console.Write("\nEnter your Name: "); string userName = Console.ReadLine();
-            Console.Write("Enter your Password: "); string userPassword = Console.ReadLine();
 
-            if (AccountExists(fileName, userName, userPassword))
+            if (NameExists(fileName, userName))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("\nAccount already exists.");
+                Console.WriteLine("\nName already exists.");
                 Console.ResetColor();
                 Console.ReadKey();
                 return;
             }
+
+            Console.Write("Enter your Password: "); string userPassword = Console.ReadLine();
 
             users.Add(UserFormat(userName, userPassword));
             Save(fileName, users);
@@ -1516,7 +1521,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             Thread.Sleep(1000);
         }
 
-        static bool AccountExists(string fileName, string name, string password)
+        static bool NameExists(string fileName, string name)
         {
             List<string> users = Load(fileName);
 
@@ -1524,7 +1529,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             {
                 var user = User(users[i]);
 
-                if (user.userName == name && user.userPassword == password)
+                if (user.userName == name)
                 {
                     return true;
                 }
@@ -1561,51 +1566,51 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                         else medicineclaimRegularQueue.Enqueue(record);
                         break;
                 }
+            }
 
-                List<string> actions = Load("actions.txt");
-                foreach (string action in actions)
+            List<string> actions = Load("actions.txt");
+            foreach (string action in actions)
+            {
+                actionHistory.Push(action);
+            }
+
+            List<string> counters = Load("counters.txt");
+            foreach (string line in counters)
+            {
+                string[] split = line.Split('|');
+                if (split.Length != 2) continue;
+                if (!int.TryParse(split[1], out int val)) continue;
+
+                switch (split[0])
                 {
-                    actionHistory.Push(action);
+                    case "Consultation": consultationCounter = val; break;
+                    case "Vaccination": vaccinationCounter = val; break;
+                    case "MaternalCare": maternalcareCounter = val; break;
+                    case "MedicineClaim": medicineclaimCounter = val; break;
                 }
+            }
 
-                List<string> counters = Load("counters.txt");
-                foreach (string line in counters)
-                {
-                    string[] split = line.Split('|');
-                    if (split.Length != 2) continue;
-                    if (!int.TryParse(split[1], out int val)) continue;
+            List<string> stats = Load("stats.txt");
+            foreach (string line in stats)
+            {
+                string[] split = line.Split('|');
+                if (split.Length != 2) continue;
+                if (!int.TryParse(split[1], out int val)) continue;
 
-                    switch (split[0])
-                    {
-                        case "Consultation": consultationCounter = val; break;
-                        case "Vaccination": vaccinationCounter = val; break;
-                        case "MaternalCare": maternalcareCounter = val; break;
-                        case "MedicineClaim": medicineclaimCounter = val; break;
-                    }
-                }
+                if (serviceCount.ContainsKey(split[0]))
+                    serviceCount[split[0]] = val;
+                else if (priorityStats.ContainsKey(split[0]))
+                    priorityStats[split[0]] = val;
+            }
 
-                List<string> stats = Load("stats.txt");
-                foreach (string line in stats)
-                {
-                    string[] split = line.Split('|');
-                    if (split.Length != 2) continue;
-                    if (!int.TryParse(split[1], out int val)) continue;
-
-                    if (serviceCount.ContainsKey(split[0]))
-                        serviceCount[split[0]] = val;
-                    else if (priorityStats.ContainsKey(split[0]))
-                        priorityStats[split[0]] = val;
-                }
-
-                List<string> hourly = Load("hourly.txt");
-                foreach (string line in hourly)
-                {
-                    string[] split = line.Split('|');
-                    if (split.Length != 2) continue;
-                    if (!int.TryParse(split[0], out int hour)) continue;
-                    if (!int.TryParse(split[1], out int count)) continue;
-                    hourlyPatients[hour] = count;
-                }
+            List<string> hourly = Load("hourly.txt");
+            foreach (string line in hourly)
+            {
+                string[] split = line.Split('|');
+                if (split.Length != 2) continue;
+                if (!int.TryParse(split[0], out int hour)) continue;
+                if (!int.TryParse(split[1], out int count)) continue;
+                hourlyPatients[hour] = count;
             }
         }
 
