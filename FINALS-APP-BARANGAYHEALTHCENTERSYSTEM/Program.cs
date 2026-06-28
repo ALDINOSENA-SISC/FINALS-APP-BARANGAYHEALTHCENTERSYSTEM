@@ -12,7 +12,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
     internal class Program
     {
         //====================GLOBAL VARIABLES====================
-        static Queue<string> consultationRegularQueue = new Queue<string>();
+        static Queue<string> consultationRegularQueue = new Queue<string>(); 
         static Queue<string> consultationPriorityQueue = new Queue<string>();
         static Queue<string> vaccinationRegularQueue = new Queue<string>();
         static Queue<string> vaccinationPriorityQueue = new Queue<string>();
@@ -60,18 +60,30 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             {
                 Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine(@"
-                 _  _  ____   __   __   ____  _  _  __    __  __ _  ____    __    ____ 
-                / )( \(  __) / _\ (  ) (_  _)/ )( \(  )  (  )(  ( \(  __)  (  )  (  _ \
-                ) __ ( ) _) /    \/ (_/\ )(  ) __ (/ (_/\ )( /    / ) _)   / (_/\ ) __/
-                \_)(_/(____)\_/\_/\____/(__) \_)(_/\____/(__)\_)__)(____)  \____/(__)  
+                Console.WriteLine(@"                                                                                                                                    
+                ╦ ╦┌─┐┌─┐┬ ┌┬┐┬ ┬╦  ┬┌┐┌┌─┐  ╔═╗╦ ╦
+                ╠═╣├┤ ├─┤│  │ ├─┤║  ││││├┤   ╠═╝╠═╣
+                ╩ ╩└─┘┴ ┴┴─┘┴ ┴ ┴╩═╝┴┘└┘└─┘  ╩  ╩ ╩
 ");
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.WriteLine("          Barangay Health Center Queue Management System");
                 Console.ResetColor();
-                Console.WriteLine("\n[1] Patient");
-                Console.WriteLine("[2] Health Worker");
-                Console.WriteLine("[3] Exit");
 
-                Console.Write("\nEnter your choice: ");
+                Console.WriteLine();
+                Divider();
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.WriteLine("  Select your role to continue");
+                Console.ResetColor();
+                Console.WriteLine();
+
+                PrintMenuItem("1", "Patient");
+                PrintMenuItem("2", "Health Worker");
+                PrintMenuItem("3", "Exit");
+
+                Divider();
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write("\n  Enter your choice: ");
+                Console.ForegroundColor = ConsoleColor.White;
 
                 if (int.TryParse(Console.ReadLine(), out int roleChoice))
                 {
@@ -107,11 +119,18 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             while (true)
             {
                 HeaderDisplay("PATIENT PORTAL");
-                Console.WriteLine("\n[1] Login");
-                Console.WriteLine("[2] Register");
-                Console.WriteLine("[3] Exit");
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.WriteLine("\n  Welcome! Please login or create an account.\n");
+                Console.ResetColor();
 
-                Console.Write("\nEnter your choice: ");
+                PrintMenuItem("1", "Login");
+                PrintMenuItem("2", "Register");
+                PrintMenuItem("3", "Back");
+
+                Divider();
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write("\n  Enter your choice: ");
+                Console.ForegroundColor = ConsoleColor.White;
 
                 if (int.TryParse(Console.ReadLine(), out int patientPortal))
                 {
@@ -150,11 +169,18 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             while (true)
             {
                 HeaderDisplay("HEALTH WORKER PORTAL");
-                Console.WriteLine("\n[1] Login");
-                Console.WriteLine("[2] Register");
-                Console.WriteLine("[3] Exit");
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.WriteLine("\n  Staff access only. Please login to continue.\n");
+                Console.ResetColor();
 
-                Console.Write("\nEnter your choice: ");
+                PrintMenuItem("1", "Login");
+                PrintMenuItem("2", "Register");
+                PrintMenuItem("3", "Back");
+
+                Divider();
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write("\n  Enter your choice: ");
+                Console.ForegroundColor = ConsoleColor.White;
 
                 if (int.TryParse(Console.ReadLine(), out int healthworkerPortal))
                 {
@@ -193,15 +219,25 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             while (true)
             {
                 HeaderDisplay("PATIENT DASHBOARD");
-                Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine($"\nWelcome, {currentUser}");
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write("  Logged in as  ");
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine($"  {currentUser}");
                 Console.ResetColor();
-                Console.WriteLine("\n[1] Select Services");
-                Console.WriteLine("[2] View Queue Progress Tracker");
-                Console.WriteLine("[3] View Health Visit History");
-                Console.WriteLine("[4] Logout");
+                Console.WriteLine();
+                Divider();
+                Console.WriteLine();
 
-                Console.Write("\nEnter your choice: ");
+                PrintMenuItem("1", "Select Services");
+                PrintMenuItem("2", "Queue Progress Tracker");
+                PrintMenuItem("3", "Health Visit History");
+                PrintMenuItem("4", "Logout");
+
+                Divider();
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write("\n  Enter your choice: ");
+                Console.ForegroundColor = ConsoleColor.White;
 
                 if (int.TryParse(Console.ReadLine(), out int patientChoice))
                 {
@@ -240,16 +276,26 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             while (true)
             {
                 HeaderDisplay("HEALTH WORKER DASHBOARD");
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write("  Logged in as  ");
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
-                Console.WriteLine($"\nWelcome, {currentUser}");
+                Console.WriteLine($"  {currentUser}");
                 Console.ResetColor();
-                Console.WriteLine("\n[1] View Queue Board");
-                Console.WriteLine("[2] Queue Handling");
-                Console.WriteLine("[3] Priority Patient Tracking");
-                Console.WriteLine("[4] Community Health Analytics");
-                Console.WriteLine("[5] Logout");
+                Console.WriteLine();
+                Divider();
+                Console.WriteLine();
 
-                Console.Write("\nEnter your choice: ");
+                PrintMenuItem("1", "View Queue Board");
+                PrintMenuItem("2", "Queue Handling");
+                PrintMenuItem("3", "Priority Patient Tracking");
+                PrintMenuItem("4", "Community Health Analytics");
+                PrintMenuItem("5", "Logout");
+
+                Divider();
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write("\n  Enter your choice: ");
+                Console.ForegroundColor = ConsoleColor.White;
 
                 if (int.TryParse(Console.ReadLine(), out int workerChoice))
                 {
@@ -292,22 +338,28 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
         {
             if (IsAlreadyQueued())
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("\nYou are already in a queue.");
-                Console.ReadKey();
+                PrintError("You are already in a queue.");
+                PressAnyKey();
                 return;
             }
 
             while (true)
             {
                 HeaderDisplay("SELECT SERVICES");
-                Console.WriteLine("\n[1] Consultation");
-                Console.WriteLine("[2] Vaccination");
-                Console.WriteLine("[3] Maternal Care");
-                Console.WriteLine("[4] Medicine Claim");
-                Console.WriteLine("[5] Exit");
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.WriteLine("\n  Choose a service to queue in for:\n");
+                Console.ResetColor();
 
-                Console.Write("\nEnter your choice: ");
+                PrintMenuItem("1", "Consultation");
+                PrintMenuItem("2", "Vaccination");
+                PrintMenuItem("3", "Maternal Care");
+                PrintMenuItem("4", "Medicine Claim");
+                PrintMenuItem("5", "Back");
+
+                Divider();
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write("\n  Enter your choice: ");
+                Console.ForegroundColor = ConsoleColor.White;
 
                 if (int.TryParse(Console.ReadLine(), out int servicesChoice))
                 { 
@@ -405,22 +457,26 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
             if (foundRecord == "")
             {
-                Console.WriteLine("\nYou are not currently in any queue.");
-                Console.ReadKey();
-                return;
+                PrintAlert("You are not currently in any queue.");
+                PressAnyKey();
+                return; ;
             }
 
             var patient = Queue(foundRecord);
             int totalInQueue = GetTotalInQueue(serviceType);
 
-            Console.WriteLine($"\nPatient       : {patient.userName}");
-            Console.WriteLine($"Queue Number  : {patient.queueNumber}");
-            Console.WriteLine($"Service       : {patient.chosenService}");
-            Console.WriteLine($"Patient Type  : {patient.patientType}");
-            Console.WriteLine($"Schedule      : {patient.date} {patient.time}");
-            Console.WriteLine($"Position      : {position} of {totalInQueue}");
+            SectionHeader("YOUR QUEUE DETAILS");
+            Console.WriteLine();
+
+            PrintField("Patient", patient.userName);
+            PrintField("Queue Number", patient.queueNumber, ConsoleColor.Cyan);
+            PrintField("Service", patient.chosenService, ConsoleColor.Yellow);
+            PrintField("Patient Type", patient.patientType);
+            PrintField("Schedule", $"{patient.date}  {patient.time}");
+            PrintField("Position", $"{position} of {totalInQueue}");
 
             Console.WriteLine();
+            Divider();
 
             if (position == 1)
             {
@@ -428,10 +484,11 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                 Console.WriteLine(">> You are next in line! Please proceed to the counter.");
                 Console.ResetColor();
             }
+
             else
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine($">> There are {position - 1} patient(s) ahead of you.");
+                Console.WriteLine($">> There are {position - 1} patients ahead of you.");
                 Console.ResetColor();
             }
 
@@ -456,32 +513,44 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
             if (patientVisits.Count == 0)
             {
-                Console.WriteLine("\nNo visit history found.");
-                Console.ReadKey();
+                PrintAlert("No visit history found.");
+                PressAnyKey();
                 return;
             }
 
-            Console.WriteLine($"\nVisit History for: {currentUser}");
-            Console.WriteLine($"Total Visits: {patientVisits.Count}");
-            Console.WriteLine("\n------------------------------");
+            Console.WriteLine();
+            Divider();
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write("  Patient");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write($"  {currentUser}");
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write("    Total Visits");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"  {patientVisits.Count}");
+            Divider();
 
             int count = 1;
             foreach (string line in patientVisits)
             {
                 var visit = Visit(line);
 
-                Console.WriteLine($"\nVisit #{count}");
-                Console.WriteLine($"  Queue Number  : {visit.queueNumber}");
-                Console.WriteLine($"  Service       : {visit.chosenService}");
-                Console.WriteLine($"  Patient Type  : {visit.patientType}");
-                Console.WriteLine($"  Scheduled     : {visit.date} {visit.time}");
-                Console.WriteLine($"  Serviced By   : {visit.workerName}");
-                Console.WriteLine("  ------------------------------");
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine($"  Visit #{count}");
+                Console.ResetColor();
 
+                PrintField("Queue Number", visit.queueNumber, ConsoleColor.Cyan);
+                PrintField("Service", visit.chosenService, ConsoleColor.Yellow);
+                PrintField("Patient Type", visit.patientType);
+                PrintField("Scheduled", $"{visit.date}  {visit.time}");
+                PrintField("Serviced By", visit.workerName, ConsoleColor.Green);
+
+                Divider();
                 count++;
             }
 
-            Console.ReadKey();
+            PressAnyKey();
         }
 
         //====================PATIENT HELPERS====================
@@ -489,14 +558,19 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
         {
             while (true)
             {
-                Console.WriteLine("\n=====Patient Type=====");
-                Console.WriteLine("[1] Regular");
-                Console.WriteLine("[2] Senior Citizen");
-                Console.WriteLine("[3] PWD");
-                Console.WriteLine("[4] Pregnant");
-                Console.WriteLine("[5] Emergency");
+                SectionHeader("SELECT PATIENT TYPE");
+                Console.WriteLine();
 
-                Console.Write("\nEnter your choice: ");
+                PrintMenuItem("1", "Regular");
+                PrintMenuItem("2", "Senior Citizen");
+                PrintMenuItem("3", "PWD");
+                PrintMenuItem("4", "Pregnant");
+                PrintMenuItem("5", "Emergency");
+
+                Divider();
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write("\n  Enter your choice: ");
+                Console.ForegroundColor = ConsoleColor.White;
 
                 if (int.TryParse(Console.ReadLine(), out int typeChoice))
                 {
@@ -525,8 +599,42 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
         static (string date, string time) GetSchedule()
         {
-            Console.Write("Enter Date (MM/DD/YY): "); string date = Console.ReadLine();
-            Console.Write("Enter Time (HH:MM AM/PM): "); string time = Console.ReadLine();
+            SectionHeader("SCHEDULE");
+
+            string date = "";
+            while (true)
+            {
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write("\n  Date (MM/DD/YY)    : ");
+                Console.ForegroundColor = ConsoleColor.White;
+                date = Console.ReadLine();
+                Console.ResetColor();
+
+                if (DateTime.TryParse(date, out DateTime result))
+                {
+                    break;
+                }
+
+                PrintError("Invalid date. Please use MM/DD/YY (e.g. 06/28/26).");
+            }
+
+
+            string time = "";
+            while (true)
+            {
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write("  Time (HH:MM AM/PM) : ");
+                Console.ForegroundColor = ConsoleColor.White;
+                time = Console.ReadLine();
+                Console.ResetColor();
+
+                if (DateTime.TryParse(time, out DateTime result))
+                {
+                    break;
+                }
+
+                PrintError("Invalid time. Please use HH:MM AM/PM (e.g. 09:30 AM).");
+            }
 
             return (date, time);
         }
@@ -599,11 +707,20 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
         {
             switch (service)
             {
-                case "Consultation": return consultationPriorityQueue.Count + consultationRegularQueue.Count;
-                case "Vaccination": return vaccinationPriorityQueue.Count + vaccinationRegularQueue.Count;
-                case "Maternal Care": return maternalcarePriorityQueue.Count + maternalcareRegularQueue.Count;
-                case "Medicine Claim": return medicineclaimPriorityQueue.Count + medicineclaimRegularQueue.Count;
-                default: return 0;
+                case "Consultation": 
+                    return consultationPriorityQueue.Count + consultationRegularQueue.Count;
+
+                case "Vaccination": 
+                    return vaccinationPriorityQueue.Count + vaccinationRegularQueue.Count;
+
+                case "Maternal Care": 
+                    return maternalcarePriorityQueue.Count + maternalcareRegularQueue.Count;
+
+                case "Medicine Claim": 
+                    return medicineclaimPriorityQueue.Count + medicineclaimRegularQueue.Count;
+
+                default: 
+                    return 0;
             }
         }
 
@@ -613,24 +730,29 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             var schedule = GetSchedule();
             string queueNumber = JoinQueue(regularQueue, priorityQueue, chosenService, patientType, schedule.date, schedule.time);
 
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("\nSuccessfully added to queue.");
-            Console.ResetColor();
-            Console.WriteLine($"Your Queue Number: {queueNumber}");
-            Console.ReadKey();
+            Console.WriteLine();
+            Divider();
+            PrintSuccess("Successfully added to queue!");
+            Console.WriteLine();
+            PrintField("Service", chosenService, ConsoleColor.Yellow);
+            PrintField("Patient Type", patientType);
+            PrintField("Queue Number", queueNumber, ConsoleColor.Cyan);
+            Console.WriteLine();
+            Divider();
+
+            PressAnyKey();
         }
 
         //====================HEALTH WORKER FEATURES====================
         static void ViewQueueBoard()
         {
             HeaderDisplay("QUEUE BOARD");
-            QueueDisplayer("CONSULTATION QUEUE", consultationRegularQueue, consultationPriorityQueue);
-            QueueDisplayer("VACCINATION QUEUE", vaccinationRegularQueue, vaccinationPriorityQueue);
-            QueueDisplayer("MATERNAL CARE QUEUE", maternalcareRegularQueue, maternalcarePriorityQueue);
-            QueueDisplayer("MEDICINE CLAIM QUEUE", medicineclaimRegularQueue, medicineclaimPriorityQueue);
+            QueueDisplay("CONSULTATION QUEUE", consultationRegularQueue, consultationPriorityQueue);
+            QueueDisplay("VACCINATION QUEUE", vaccinationRegularQueue, vaccinationPriorityQueue);
+            QueueDisplay("MATERNAL CARE QUEUE", maternalcareRegularQueue, maternalcarePriorityQueue);
+            QueueDisplay("MEDICINE CLAIM QUEUE", medicineclaimRegularQueue, medicineclaimPriorityQueue);
 
-            Console.WriteLine("\nPress any key to return");
-            Console.ReadKey();
+            PressAnyKey();
         }
 
         static void QueueHandling()
@@ -638,13 +760,20 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             while (true)
             {
                 HeaderDisplay("QUEUE HANDLING");
-                Console.WriteLine("\n[1] Call Next Patient");
-                Console.WriteLine("[2] Complete Service");
-                Console.WriteLine("[3] Skip Patient");
-                Console.WriteLine("[4] Undo Last Action");
-                Console.WriteLine("[5] Back");
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.WriteLine("\n  Manage patient queues across all services.\n");
+                Console.ResetColor();
 
-                Console.Write("\nEnter your choice: ");
+                PrintMenuItem("1", "Call Next Patient");
+                PrintMenuItem("2", "Complete Service");
+                PrintMenuItem("3", "Skip Patient");
+                PrintMenuItem("4", "Undo Last Action");
+                PrintMenuItem("5", "Back");
+
+                Divider();
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write("\n  Enter your choice: ");
+                Console.ForegroundColor = ConsoleColor.White;
 
                 if (int.TryParse(Console.ReadLine(), out int queueChoice))
                 {
@@ -687,6 +816,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             HeaderDisplay("CALL NEXT PATIENT");
 
             int service = ServiceHandling();
+            string serving = "";
 
             switch (service)
             {
@@ -694,8 +824,8 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                     {
                         if (currentConsultationPatient != "")
                         {
-                            Console.WriteLine("\nA patient is already being served.");
-                            Console.ReadKey();
+                            PrintAlert("A patient is already being served."); 
+                            PressAnyKey(); 
                             return;
                         }
 
@@ -703,14 +833,12 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
                         if (currentConsultationPatient == "")
                         {
-                            Console.WriteLine("\nNo patients in queue.");
-                            Console.ReadKey();
+                            PrintAlert("No patients in queue."); 
+                            PressAnyKey(); 
                             return;
                         }
 
-                        var patient = Queue(currentConsultationPatient);
-
-                        Console.WriteLine($"\nNow Serving: {patient.userName}");
+                        serving = Queue(currentConsultationPatient).userName;
                         break;
                     }
 
@@ -718,8 +846,8 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                     {
                         if (currentVaccinationPatient != "")
                         {
-                            Console.WriteLine("\nA patient is already being served.");
-                            Console.ReadKey();
+                            PrintAlert("A patient is already being served.");
+                            PressAnyKey();
                             return;
                         }
 
@@ -727,14 +855,12 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
                         if (currentVaccinationPatient == "")
                         {
-                            Console.WriteLine("\nNo patients in queue.");
-                            Console.ReadKey();
+                            PrintAlert("No patients in queue.");
+                            PressAnyKey();
                             return;
                         }
 
-                        var patient = Queue(currentVaccinationPatient);
-
-                        Console.WriteLine($"\nNow Serving: {patient.userName}");
+                        serving = Queue(currentConsultationPatient).userName;
                         break;
                     }
 
@@ -742,8 +868,8 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                     {
                         if (currentMaternalCarePatient != "")
                         {
-                            Console.WriteLine("\nA patient is already being served.");
-                            Console.ReadKey();
+                            PrintAlert("A patient is already being served.");
+                            PressAnyKey();
                             return;
                         }
 
@@ -751,15 +877,12 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
                         if (currentMaternalCarePatient == "")
                         {
-                            Console.WriteLine("\nNo patients in queue.");
-                            Console.ReadKey();
+                            PrintAlert("No patients in queue.");
+                            PressAnyKey();
                             return;
                         }
 
-                        var patient = Queue(currentMaternalCarePatient);
-
-                        Console.WriteLine(
-                            $"\nNow Serving: {patient.userName}");
+                        serving = Queue(currentConsultationPatient).userName;
                         break;
                     }
 
@@ -767,8 +890,8 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                     {
                         if (currentMedicineClaimPatient != "")
                         {
-                            Console.WriteLine("\nA patient is already being served.");
-                            Console.ReadKey();
+                            PrintAlert("A patient is already being served.");
+                            PressAnyKey();
                             return;
                         }
 
@@ -776,15 +899,12 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
                         if (currentMedicineClaimPatient == "")
                         {
-                            Console.WriteLine("\nNo patients in queue.");
-                            Console.ReadKey();
+                            PrintAlert("No patients in queue.");
+                            PressAnyKey();
                             return;
                         }
 
-                        var patient = Queue(currentMedicineClaimPatient);
-
-                        Console.WriteLine(
-                            $"\nNow Serving: {patient.userName}");
+                        serving = Queue(currentConsultationPatient).userName;
                         break;
                     }
 
@@ -793,8 +913,16 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                     return;
             }
 
-            Console.WriteLine("\nPatient has been called.");
-            Console.ReadKey();
+            Console.WriteLine();
+            Divider();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("  NOW SERVING");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine($"  {serving}");
+            Console.ResetColor();
+            Divider();
+
+            PressAnyKey();
         }
 
         static void SkipService()
@@ -810,8 +938,8 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                     {
                         if (currentConsultationPatient == "")
                         {
-                            Console.WriteLine("\nNo patient is currently being served.");
-                            Console.ReadKey();
+                            PrintAlert("No patient is currently being served."); 
+                            PressAnyKey(); 
                             return;
                         }
 
@@ -824,8 +952,6 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
                         currentConsultationPatient = "";
 
-                        Console.WriteLine("\nPatient skipped.");
-                        Console.ReadKey();
                         break;
                     }
 
@@ -833,8 +959,8 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                     {
                         if (currentVaccinationPatient == "")
                         {
-                            Console.WriteLine("\nNo patient is currently being served.");
-                            Console.ReadKey();
+                            PrintAlert("No patient is currently being served.");
+                            PressAnyKey();
                             return;
                         }
 
@@ -847,8 +973,6 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
                         currentVaccinationPatient = "";
 
-                        Console.WriteLine("\nPatient skipped.");
-                        Console.ReadKey();
                         break;
                     }
 
@@ -856,8 +980,8 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                     {
                         if (currentMaternalCarePatient == "")
                         {
-                            Console.WriteLine("\nNo patient is currently being served.");
-                            Console.ReadKey();
+                            PrintAlert("No patient is currently being served.");
+                            PressAnyKey();
                             return;
                         }
 
@@ -870,8 +994,6 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
                         currentMaternalCarePatient = "";
 
-                        Console.WriteLine("\nPatient skipped.");
-                        Console.ReadKey();
                         break;
                     }
 
@@ -879,8 +1001,8 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                     {
                         if (currentMedicineClaimPatient == "")
                         {
-                            Console.WriteLine("\nNo patient is currently being served.");
-                            Console.ReadKey();
+                            PrintAlert("No patient is currently being served.");
+                            PressAnyKey();
                             return;
                         }
 
@@ -893,8 +1015,6 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
                         currentMedicineClaimPatient = "";
 
-                        Console.WriteLine("\nPatient skipped.");
-                        Console.ReadKey();
                         break;
                     }
 
@@ -902,6 +1022,9 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                     InvalidInput();
                     return;
             }
+
+            PrintSuccess("Patient skipped and moved to the back of the queue.");
+            PressAnyKey();
         }
 
         static void UndoLastAction()
@@ -910,16 +1033,24 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
             if (actionHistory.Count == 0)
             {
-                Console.WriteLine("\nNo actions to undo.");
-                Console.ReadKey();
+                PrintAlert("No actions to undo.");
+                PressAnyKey();
                 return;
             }
 
             string lastAction = actionHistory.Peek();
 
-            Console.WriteLine($"\nLast Action:");
-            Console.WriteLine(lastAction);
-            Console.Write("Undo? (Y/N): "); string undo = Console.ReadLine().ToLower();
+            SectionHeader("LAST ACTION");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine($"\n  {lastAction}\n");
+            Divider();
+            Console.ResetColor();
+
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write("\n  Undo this action? (Y/N): ");
+            Console.ForegroundColor = ConsoleColor.White;
+            string undo = Console.ReadLine().ToLower();
+            Console.ResetColor();
 
             if (undo == "y")
             {
@@ -951,11 +1082,11 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
                         RemoveVisitRecord(record);
 
-                        Console.WriteLine("\nCompleted service has been restored.");
+                        PrintSuccess("Completed service has been restored.");
                         break;
 
                     case "SKIP":
-                        Console.WriteLine("\nSkip action removed from history.");
+                        PrintSuccess("Skip action removed from history.");
                         break;
                 }
             }
@@ -970,7 +1101,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                 InvalidInput();
             }
 
-            Console.ReadKey();
+            PressAnyKey();
         }
 
         static void PriorityPatientTracking()
@@ -984,17 +1115,22 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                 totalPriority += kvp.Value;
             }
 
-            Console.WriteLine($"\nTotal Priority Patients Serviced: {totalPriority}");
-            Console.WriteLine("\n------------------------------");
-            Console.WriteLine("\nBreakdown by Type:");
+            SectionHeader("TOTAL HISTORY");
+            Console.WriteLine();
 
-            Console.WriteLine($"\n  Senior Citizen : {priorityStats["Senior Citizen"]}");
-            Console.WriteLine($"  PWD            : {priorityStats["PWD"]}");
-            Console.WriteLine($"  Pregnant       : {priorityStats["Pregnant"]}");
-            Console.WriteLine($"  Emergency      : {priorityStats["Emergency"]}");
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write("  Total Priority Patients Serviced  ");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"{totalPriority}");
+            Console.ResetColor();
+            Console.WriteLine();
 
-            Console.WriteLine("\n------------------------------");
-            Console.WriteLine("\nCurrently Waiting Priority Patients:");
+            PrintField("Senior Citizen", $"{priorityStats["Senior Citizen"]}", ConsoleColor.Magenta);
+            PrintField("PWD", $"{priorityStats["PWD"]}", ConsoleColor.Blue);
+            PrintField("Pregnant", $"{priorityStats["Pregnant"]}", ConsoleColor.Green);
+            PrintField("Emergency", $"{priorityStats["Emergency"]}", ConsoleColor.Red);
+
+            SectionHeader("CURRENTLY WAITING");
 
             var allQueues = new (string service, Queue<string> priority)[]
             {
@@ -1010,13 +1146,24 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             {
                 if (priority.Count > 0)
                 {
-                    Console.WriteLine($"\n  {service}:");
+                    Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"  {service}");
+                    Console.ResetColor();
 
                     int pos = 1;
                     foreach (string record in priority)
                     {
                         var patient = Queue(record);
-                        Console.WriteLine($"    {pos}. [{patient.queueNumber}] {patient.userName} ({patient.patientType})");
+                        Console.ForegroundColor = ConsoleColor.Gray;
+                        Console.Write($"    {pos,2}. ");
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.Write($"[{patient.queueNumber}]");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.Write($"  {patient.userName,-20}");
+                        Console.ForegroundColor = ConsoleColor.Gray;
+                        Console.WriteLine($"({patient.patientType})");
+                        Console.ResetColor();
                         pos++;
                     }
 
@@ -1026,10 +1173,10 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
             if (!anyWaiting)
             {
-                Console.WriteLine("\n  No priority patients currently waiting.");
+                PrintAlert("No priority patients currently waiting.");
             }
 
-            Console.ReadKey();
+            PressAnyKey();
         }
 
         static void CommunityHealthAnalytics()
@@ -1037,12 +1184,19 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             while (true)
             {
                 HeaderDisplay("COMMUNITY HEALTH ANALYTICS");
-                Console.WriteLine("\n[1] Service Trends");
-                Console.WriteLine("[2] Most Requested Service");
-                Console.WriteLine("[3] Peak Hours");
-                Console.WriteLine("[4] Back");
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.WriteLine("\n  View health service trends and statistics.\n");
+                Console.ResetColor();
 
-                Console.Write("\nEnter your choice: ");
+                PrintMenuItem("1", "Service Trends");
+                PrintMenuItem("2", "Most Requested Service");
+                PrintMenuItem("3", "Peak Hours");
+                PrintMenuItem("4", "Back");
+
+                Divider();
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write("\n  Enter your choice: ");
+                Console.ForegroundColor = ConsoleColor.White;
 
                 if (int.TryParse(Console.ReadLine(), out int choice))
                 {
@@ -1078,12 +1232,18 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
         //====================HEALTH WORKER HELPERS====================
         static int ServiceHandling()
         {
-            HeaderDisplay("SERVICE SELECTION");
-            Console.WriteLine("\n[1] Consultation");
-            Console.WriteLine("[2] Vaccination");
-            Console.WriteLine("[3] Maternal Care");
-            Console.WriteLine("[4] Medicine Claim");
-            Console.Write("\nSelect Service: ");
+            SectionHeader("SELECT SERVICE");
+            Console.WriteLine();
+
+            PrintMenuItem("1", "Consultation");
+            PrintMenuItem("2", "Vaccination");
+            PrintMenuItem("3", "Maternal Care");
+            PrintMenuItem("4", "Medicine Claim");
+
+            Divider();
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write("\n  Select Service: ");
+            Console.ForegroundColor = ConsoleColor.White;
 
             if (int.TryParse(Console.ReadLine(), out int choice))
             {
@@ -1218,8 +1378,8 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
         {
             if (currentPatient == "")
             {
-                Console.WriteLine("\nNo patient is currently being served.");
-                Console.ReadKey();
+                PrintAlert("No patient is currently being served.");
+                PressAnyKey();
                 return false;
             }
 
@@ -1245,8 +1405,8 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             visits.Add(VisitFormat(completedPatient, currentUser));
             Save("visits.txt", visits);
 
-            Console.WriteLine("\nService completed successfully.");
-            Console.ReadKey();
+            PrintSuccess("Service completed successfully.");
+            PressAnyKey();
             return true;
         }
 
@@ -1294,13 +1454,22 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             HeaderDisplay("SERVICE TRENDS");
 
             int total = 0;
+
             foreach (var kvp in serviceCount)
+            {
                 total += kvp.Value;
+            }
 
             int maxCount = serviceCount.Values.Max();
 
-            Console.WriteLine($"\nTotal Patients Serviced: {total}");
-            Console.WriteLine("\n------------------------------");
+            Console.WriteLine();
+            Divider();
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write("  Total Patients Serviced  ");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"{total}");
+            Divider();
+            Console.WriteLine();
 
             foreach (var kvp in serviceCount)
             {
@@ -1308,10 +1477,21 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                 double percent = total > 0 ? (double)count / total * 100 : 0;
                 string bar = BuildBar(count, maxCount, 20);
 
-                Console.WriteLine($"\n  {kvp.Key,-15}: {count,4} patients  [{bar}] {percent:0.0}%");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write($"  {kvp.Key,-15}");
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write($"  {count,4} patients  ");
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.Write($"[{bar}]");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine($"  {percent:0.0}%");
+                Console.ResetColor();
+
             }
 
-            Console.ReadKey();
+            Console.WriteLine();
+            Divider();
+            PressAnyKey();
         }
 
         static void MostRequestedService()
@@ -1319,37 +1499,55 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             HeaderDisplay("MOST REQUESTED SERVICE");
 
             int total = 0;
+
             foreach (var kvp in serviceCount)
+            {
                 total += kvp.Value;
+            }
 
             if (total == 0)
             {
-                Console.WriteLine("\nNo service data available yet.");
-                Console.ReadKey();
+                PrintAlert("No service data available yet.");
+                PressAnyKey();
                 return;
             }
 
             var ranked = serviceCount.OrderByDescending(kvp => kvp.Value).ToList();
 
-            Console.WriteLine("\nService Ranking:");
-            Console.WriteLine("\n------------------------------");
+            SectionHeader("SERVICE RANKING");
+            Console.WriteLine();
 
             int rank = 1;
             foreach (var kvp in ranked)
             {
                 double percent = (double)kvp.Value / total * 100;
-                string medal = rank == 1 ? " <<" : "";
+                bool isTop = rank == 1;
+                Console.ForegroundColor = isTop ? ConsoleColor.Yellow : ConsoleColor.Gray;
+                Console.Write($"  #{rank}  ");
+                Console.ForegroundColor = isTop ? ConsoleColor.White : ConsoleColor.Gray;
+                Console.Write($"{kvp.Key,-15}");
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write($"  {kvp.Value,4} patients  ({percent:0.0}%)");
 
-                Console.WriteLine($"\n  #{rank} {kvp.Key,-15}: {kvp.Value,4} patients  ({percent:0.0}%){medal}");
+                if (isTop)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.Write("  << TOP");
+                }
+
+                Console.WriteLine();
+                Console.ResetColor();
                 rank++;
             }
 
-            Console.WriteLine("\n------------------------------");
+            Console.WriteLine();
+            Divider();
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"\n  Most Requested: {ranked[0].Key} ({ranked[0].Value} patients)");
+            Console.WriteLine($"\n  Most Requested:  {ranked[0].Key}  ({ranked[0].Value} patients)");
             Console.ResetColor();
+            Divider();
 
-            Console.ReadKey();
+            PressAnyKey();
         }
 
         static void PeakHours()
@@ -1360,13 +1558,14 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
             if (totalPatients == 0)
             {
-                Console.WriteLine("\nNo hourly data available yet.");
-                Console.ReadKey();
+                PrintAlert("No hourly data available yet.");
+                PressAnyKey();
                 return;
             }
 
             int peakHour = 0;
             int peakCount = 0;
+
             for (int i = 0; i < hourlyPatients.Length; i++)
             {
                 if (hourlyPatients[i] > peakCount)
@@ -1376,8 +1575,8 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                 }
             }
 
-            Console.WriteLine("\nPatients per Hour:");
-            Console.WriteLine("\n------------------------------");
+            SectionHeader("PATIENTS PER HOUR");
+            Console.WriteLine();
 
             for (int i = 0; i < hourlyPatients.Length; i++)
             {
@@ -1387,24 +1586,38 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                 string bar = BuildBar(hourlyPatients[i], peakCount, 20);
                 bool isPeak = i == peakHour;
 
-                if (isPeak) Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine($"  {label} : {hourlyPatients[i],4} patients  [{bar}]{(isPeak ? " << PEAK" : "")}");
+                Console.ForegroundColor = isPeak ? ConsoleColor.Yellow : ConsoleColor.Gray;
+                Console.Write($"  {label}  ");
+                Console.ForegroundColor = isPeak ? ConsoleColor.White : ConsoleColor.Gray;
+                Console.Write($"{hourlyPatients[i],4} patients  ");
+                Console.ForegroundColor = isPeak ? ConsoleColor.Yellow : ConsoleColor.Cyan;
+                Console.Write($"[{bar}]");
+
+                if (isPeak)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.Write("  << PEAK");
+                }
+
+                Console.WriteLine();
                 Console.ResetColor();
             }
 
-            Console.WriteLine("\n------------------------------");
+            Console.WriteLine();
+            Divider();
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"\n  Peak Hour: {DateTime.Today.AddHours(peakHour):hh:00 tt} ({peakCount} patients)");
+            Console.WriteLine($"\n  Peak Hour:  {DateTime.Today.AddHours(peakHour):hh:00 tt}  ({peakCount} patients)");
             Console.ResetColor();
+            Divider();
 
-            Console.ReadKey();
+            PressAnyKey();
         }
 
         static string BuildBar(int value, int max, int width)
         {
             if (max == 0) return new string('-', width);
             int filled = (int)((double)value / max * width);
-            return new string('█', filled) + new string('░', width - filled);
+            return new string('#', filled) + new string('.', width - filled);
         }
 
         static void UpdatePriorityStats(string patientType)
@@ -1424,11 +1637,12 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
         static void UpdateHourlyPatients(string time)
         {
-            if (DateTime.TryParseExact(time, "hh:mm tt", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsed))
+            if (DateTime.TryParse(time, out DateTime parsed))
             {
                 hourlyPatients[parsed.Hour]++;
                 SaveHourlyPatients();
             }
+
         }
 
         //====================GLOBAL HELPERS====================
@@ -1436,9 +1650,19 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
         {
             List<string> users = Load(fileName);
 
-            HeaderDisplay("LOGIN MENU");
-            Console.Write("\nEnter your name: "); string userName = Console.ReadLine();
-            Console.Write("Enter your Password: "); string userPassword = Console.ReadLine();
+            HeaderDisplay("LOGIN");
+            SectionHeader("ENTER YOUR CREDENTIALS");
+
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write("\n  Name      : ");
+            Console.ForegroundColor = ConsoleColor.White;
+            string userName = Console.ReadLine();
+
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write("  Password  : ");
+            Console.ForegroundColor = ConsoleColor.White;
+            string userPassword = Console.ReadLine();
+            Console.ResetColor();
 
             for (int i = 0; i < users.Count; i++)
             {
@@ -1446,16 +1670,15 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
                 if (user.userName == userName && user.userPassword == userPassword)
                 {
-                    Console.WriteLine("Login Successful!");
+                    PrintSuccess("Login successful!");
                     currentUser = userName;
+                    Thread.Sleep(800);
                     return true;
                 }
             }
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("\n[ERROR]");
-            Console.WriteLine("Account doesn't exist. Please try again or register an account");
-            Console.ResetColor();
-            Console.ReadKey();
+
+            PrintError("Account not found. Please check your credentials or register.");
+            PressAnyKey();
             return false;
         }
 
@@ -1463,26 +1686,35 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
         {
             List<string> users = Load(fileName);
 
-            HeaderDisplay("REGISTER MENU");
-            Console.Write("\nEnter your Name: "); string userName = Console.ReadLine();
+            HeaderDisplay("REGISTER");
+            SectionHeader("CREATE A NEW ACCOUNT");
+
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write("\n  Name      : ");
+            Console.ForegroundColor = ConsoleColor.White;
+            string userName = Console.ReadLine();
+            Console.ResetColor();
 
             if (NameExists(fileName, userName))
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("\nName already exists.");
-                Console.ResetColor();
-                Console.ReadKey();
+                PrintError("Name already exists. Please choose a different name.");
+                PressAnyKey();
                 return;
             }
 
-            Console.Write("Enter your Password: "); string userPassword = Console.ReadLine();
+
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write("  Password  : ");
+            Console.ForegroundColor = ConsoleColor.White;
+            string userPassword = Console.ReadLine();
+            Console.ResetColor();
 
             users.Add(UserFormat(userName, userPassword));
             Save(fileName, users);
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("\nUser registered successfully.");
-            Console.ResetColor();
-            Console.ReadKey();
+
+            PrintSuccess("Account created successfully! You may now login.");
+            PressAnyKey();
+
         }
 
         static void CreateFileIfNotExisting(string fileName)
@@ -1499,8 +1731,6 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             CreateFileIfNotExisting("workers.txt");
             CreateFileIfNotExisting("visits.txt");
             CreateFileIfNotExisting("queues.txt");
-            CreateFileIfNotExisting("analytics.txt");
-            CreateFileIfNotExisting("reports.txt");
             CreateFileIfNotExisting("actions.txt");
             CreateFileIfNotExisting("counters.txt");
             CreateFileIfNotExisting("stats.txt");
@@ -1510,13 +1740,18 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             {
                 DefaultWorkers();
             }
+
+            //remove comment if you want default patients
+            /*if (Load("patients.txt").Count == 0)
+            {
+                DefaultPatients();
+            }*/
         }
 
         static void InvalidInput()
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("\n[ERROR]");
-            Console.WriteLine("Invalid input. Please try again");
+            Console.WriteLine("\n  Invalid input. Please try again.");
             Console.ResetColor();
             Thread.Sleep(1000);
         }
@@ -1706,30 +1941,72 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             return num;
         }
 
+        static void DefaultWorkers()
+        {
+            var defaultWorkers = new List<string>
+            {
+                "Rose|Tumayan",
+                "Arnel|Montablan",
+                "Shayne|Buenaventura",
+                "Aldin|Osena",
+                "Kyle|Gloriani"
+            };
+           
+            Save("workers.txt", defaultWorkers);
+        }
+
+        static void DefaultPatients()
+        {
+            var defaultPatients = new List<string>
+            {
+                "Gian|Topacio",
+                "Simon|Songco",
+                "Clark|Labay",
+                "Zak|Guevarra",
+                "Keeyan|Segismundo",
+                "Art|Cuaresma"
+            };
+
+            Save("patients.txt", defaultPatients);
+        }
+
+        //====================UI HELPERS====================
         static void HeaderDisplay(string title)
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("+==================================================+");
-            Console.WriteLine($"|{title.PadLeft((50 + title.Length) / 2).PadRight(50)}|");
-            Console.WriteLine("+==================================================+");
+            Console.WriteLine("\n  +==================================================+");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine($"  |{title.PadLeft((50 + title.Length) / 2).PadRight(50)}|");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("  +==================================================+");
             Console.ResetColor();
         }
 
-        static void QueueDisplayer(string title, Queue<string> regularQueue, Queue<string> priorityQueue)
+        static void QueueDisplay(string title, Queue<string> regularQueue, Queue<string> priorityQueue)
         {
-            Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.WriteLine($"\n\n{title}");
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write("  +-- ");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(title);
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.WriteLine($"  ({priorityQueue.Count + regularQueue.Count} waiting)");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("  |");
             Console.ResetColor();
-            Console.WriteLine("------------------------------");
 
             int position = 1;
 
-            Console.WriteLine("\nPRIORITY PATIENTS");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("  |  PRIORITY");
+            Console.ResetColor();
 
             if (priorityQueue.Count == 0)
             {
-                Console.WriteLine("NONE");
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.WriteLine("  |    none");
+                Console.ResetColor();
             }
 
             else
@@ -1737,33 +2014,115 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                 foreach (string record in priorityQueue)
                 {
                     var patient = Queue(record);
-                    Console.WriteLine($"{position}. [{patient.queueNumber}] {patient.userName} ({patient.patientType})");
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.Write($"  |  {position,2}. ");
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.Write($"[{patient.queueNumber}]");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.Write($"  {patient.userName,-20}");
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.WriteLine($"({patient.patientType})");
+                    Console.ResetColor();
                     position++;
                 }
             }
 
-            Console.WriteLine("\nREGULAR PATIENTS");
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.WriteLine("  |");
+            Console.WriteLine("  |  REGULAR");
+            Console.ResetColor();
 
             if (regularQueue.Count == 0)
             {
-                Console.WriteLine("NONE");
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.WriteLine("  |    none");
+                Console.ResetColor();
             }
             else
             {
                 foreach (string record in regularQueue)
                 {
                     var patient = Queue(record);
-                    Console.WriteLine($"{position}. [{patient.queueNumber}] {patient.userName} ({patient.patientType})");
-                    position++;
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.Write($"  |  {position,2}. ");
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.Write($"[{patient.queueNumber}]");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.Write($"  {patient.userName,-20}");
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.WriteLine($"({patient.patientType})");
+                    Console.ResetColor();
+                    position++; ;
                 }
             }
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("  +" + new string('-', 50));
+            Console.ResetColor();
         }
 
-        static void DefaultWorkers()
+        static void Divider(int width = 54)
         {
-            var defaultWorkers = new List<string>();
-            defaultWorkers.Add(UserFormat("admin", "1234"));
-            Save("workers.txt", defaultWorkers);
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.WriteLine("  " + new string('-', width));
+            Console.ResetColor();
         }
+
+        static void PrintMenuItem(string number, string label)
+        {
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write($"  [{number}]");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine($" {label}");
+            Console.ResetColor();
+        }
+
+        static void PrintSuccess(string msg)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"\n  {msg}");
+            Console.ResetColor();
+        }
+
+        static void PrintError(string msg)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"\n  {msg}");
+            Console.ResetColor();
+        }
+
+        static void PrintAlert(string msg)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"\n  {msg}");
+            Console.ResetColor();
+        }
+
+        static void PrintField(string label, string value, ConsoleColor valueColor = ConsoleColor.White)
+        {
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write($"  {label,-16}: ");
+            Console.ForegroundColor = valueColor;
+            Console.WriteLine(value);
+            Console.ResetColor();
+        }
+
+        static void PressAnyKey()
+        {
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.WriteLine("\n  Press any key to continue...");
+            Console.ResetColor();
+            Console.ReadKey();
+        }
+
+        static void SectionHeader(string title)
+        {
+            Console.WriteLine();
+            Divider();
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine($"  {title}");
+            Divider();
+            Console.ResetColor();
+        }   
     }
 }
