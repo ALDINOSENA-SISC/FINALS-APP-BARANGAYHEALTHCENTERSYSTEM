@@ -20,7 +20,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
         static Queue<string> maternalcarePriorityQueue = new Queue<string>();
         static Queue<string> medicineclaimRegularQueue = new Queue<string>();
         static Queue<string> medicineclaimPriorityQueue = new Queue<string>();
-        static Stack<string> actionHistory = new Stack<string>();
+        static Stack<string> servicedPatients = new Stack<string>();
         static Dictionary<string, int> serviceCount = new Dictionary<string, int>()
         {
             { "Consultation", 0 },
@@ -767,7 +767,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                 PrintMenuItem("1", "Call Next Patient");
                 PrintMenuItem("2", "Complete Service");
                 PrintMenuItem("3", "Skip Patient");
-                PrintMenuItem("4", "Undo Last Action");
+                PrintMenuItem("4", "View Completed Patients");
                 PrintMenuItem("5", "Back");
 
                 Divider();
@@ -792,7 +792,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                             break;
 
                         case 4:
-                            UndoLastAction();
+                            ViewServicedPatients();
                             break;
 
                         case 5:
@@ -944,11 +944,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                         }
 
                         skippedPatient = SkipPatient(consultationRegularQueue, consultationPriorityQueue);
-                        actionHistory.Push($"SKIP|{skippedPatient}");
 
-                        List<string> actions = Load("actions.txt");
-                        actions.Add($"SKIP|{skippedPatient}");
-                        Save("actions.txt", actions);
 
                         currentConsultationPatient = "";
 
@@ -965,11 +961,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                         }
 
                         skippedPatient = SkipPatient(vaccinationRegularQueue, vaccinationPriorityQueue);
-                        actionHistory.Push($"SKIP|{skippedPatient}");
 
-                        List<string> actions = Load("actions.txt");
-                        actions.Add($"SKIP|{skippedPatient}");
-                        Save("actions.txt", actions);
 
                         currentVaccinationPatient = "";
 
@@ -986,11 +978,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                         }
 
                         skippedPatient = SkipPatient(maternalcareRegularQueue, maternalcarePriorityQueue);
-                        actionHistory.Push($"SKIP|{skippedPatient}");
 
-                        List<string> actions = Load("actions.txt");
-                        actions.Add($"SKIP|{skippedPatient}");
-                        Save("actions.txt", actions);
 
                         currentMaternalCarePatient = "";
 
@@ -1007,11 +995,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                         }
 
                         skippedPatient = SkipPatient(medicineclaimRegularQueue, medicineclaimPriorityQueue);
-                        actionHistory.Push($"SKIP|{skippedPatient}");
 
-                        List<string> actions = Load("actions.txt");
-                        actions.Add($"SKIP|{skippedPatient}");
-                        Save("actions.txt", actions);
 
                         currentMedicineClaimPatient = "";
 
@@ -1027,80 +1011,85 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             PressAnyKey();
         }
 
-        static void UndoLastAction()
+        static void ViewServicedPatients()
         {
-            HeaderDisplay("UNDO LAST ACTION");
+            HeaderDisplay("SERVICED PATIENTS");
 
-            if (actionHistory.Count == 0)
+            if (servicedPatients.Count == 0)
             {
-                PrintAlert("No actions to undo.");
+                PrintAlert("No patients have been serviced yet.");
                 PressAnyKey();
                 return;
             }
 
-            string lastAction = actionHistory.Peek();
+            var grouped = new Dictionary<string, List<(string queueNumber, string userName, string chosenService, string patientType, string date, string time, string workerName)>>();
 
-            SectionHeader("LAST ACTION");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine($"\n  {lastAction}\n");
+            foreach (string record in servicedPatients)
+            {
+                string[] split = record.Split('|');
+                bool isVisit = split.Length == 7;
+
+                string queueNumber = split[0];
+                string userName = split[1];
+                string chosenService = split[2];
+                string patientType = split[3];
+                string date = split[4];
+                string time = split[5];
+                string workerName;
+
+                if (isVisit)
+                {
+                    workerName = split[6];
+                }
+                else
+                {
+                    workerName = currentUser;
+                }
+
+                if (!grouped.ContainsKey(date))
+                {
+                    grouped[date] = new List<(string, string, string, string, string, string, string)>();
+                }
+
+                grouped[date].Add((queueNumber, userName, chosenService, patientType, date, time, workerName));
+            }
+
+            var sortedDates = grouped.Keys
+                    .OrderBy(currentDate => DateTime.TryParse(currentDate, out DateTime parsedDate) ? parsedDate : DateTime.MaxValue)
+                    .ToList();
+
+            foreach (string currentDate in sortedDates)
+            {
+                SectionHeader(currentDate);
+                Console.WriteLine();
+
+                var sortedPatients = grouped[currentDate]
+                    .OrderBy(currentPatient => DateTime.TryParse(currentPatient.time, out DateTime parsedTime) ? parsedTime : DateTime.MaxValue)
+                    .ToList();
+
+                int count = 1;
+
+                foreach (var currentPatient in sortedPatients)
+                {
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.Write($"  {count,2}. ");
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.Write($"[{currentPatient.queueNumber}]");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.Write($"  {currentPatient.userName,-20}");
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.Write($"  {currentPatient.chosenService,-15}");
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.Write($"  ({currentPatient.patientType})");
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine($"  served by {currentPatient.workerName}");
+                    Console.ResetColor();
+                    count++;
+                }
+            }
+
+            Console.WriteLine();
             Divider();
-            Console.ResetColor();
-
-            Console.ForegroundColor = ConsoleColor.Gray;
-            Console.Write("\n  Undo this action? (Y/N): ");
-            Console.ForegroundColor = ConsoleColor.White;
-            string undo = Console.ReadLine().ToLower();
-            Console.ResetColor();
-
-            if (undo == "y")
-            {
-                string action = actionHistory.Pop();
-
-                List<string> actions = Load("actions.txt");
-
-                if (actions.Count > 0)
-                {
-                    actions.RemoveAt(actions.Count - 1);
-                }
-
-                Save("actions.txt", actions);
-
-                string[] split = action.Split('|');
-                string actionType = split[0];
-                string record = $"{split[0]},{split[1]}|{split[2]}|{split[3]}|{split[4]}|{split[5]}|{split[6]}";
-
-                switch (actionType)
-                {
-                    case "COMPLETE":
-
-                        RestorePatient(record);
-                        List<string> queuedPatients = Load("queues.txt");
-
-                        queuedPatients.Add(record);
-
-                        Save("queues.txt", queuedPatients);
-
-                        RemoveVisitRecord(record);
-
-                        PrintSuccess("Completed service has been restored.");
-                        break;
-
-                    case "SKIP":
-                        PrintSuccess("Skip action removed from history.");
-                        break;
-                }
-            }
-
-            else if (undo == "n")
-            {
-                return;
-            }
-
-            else
-            {
-                InvalidInput();
-            }
-
             PressAnyKey();
         }
 
@@ -1307,54 +1296,6 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             }
         }
 
-        static void RestorePatient(string record)
-        {
-            var patient = Queue(record);
-
-            if (patient.patientType == "Regular")
-            {
-                switch (patient.chosenService)
-                {
-                    case "Consultation":
-                        consultationRegularQueue.Enqueue(record);
-                        break;
-
-                    case "Vaccination":
-                        vaccinationRegularQueue.Enqueue(record);
-                        break;
-
-                    case "Maternal Care":
-                        maternalcareRegularQueue.Enqueue(record);
-                        break;
-
-                    case "Medicine Claim":
-                        medicineclaimRegularQueue.Enqueue(record);
-                        break;
-                }
-            }
-            else
-            {
-                switch (patient.chosenService)
-                {
-                    case "Consultation":
-                        consultationPriorityQueue.Enqueue(record);
-                        break;
-
-                    case "Vaccination":
-                        vaccinationPriorityQueue.Enqueue(record);
-                        break;
-
-                    case "Maternal Care":
-                        maternalcarePriorityQueue.Enqueue(record);
-                        break;
-
-                    case "Medicine Claim":
-                        medicineclaimPriorityQueue.Enqueue(record);
-                        break;
-                }
-            }
-        }
-
         static string SkipPatient(Queue<string> regularQueue, Queue<string> priorityQueue)
         {
             if (priorityQueue.Count > 0)
@@ -1390,16 +1331,12 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
             Save("queues.txt", queuedPatients);
 
-            actionHistory.Push($"COMPLETE|{completedPatient}");
+            servicedPatients.Push(completedPatient);
 
             var patient = Queue(completedPatient);
             UpdateServiceCount(patient.chosenService);
             UpdatePriorityStats(patient.patientType);
             UpdateHourlyPatients(patient.time);
-
-            List<string> actions = Load("actions.txt");
-            actions.Add($"COMPLETE|{completedPatient}");
-            Save("actions.txt", actions);
 
             List<string> visits = Load("visits.txt");
             visits.Add(VisitFormat(completedPatient, currentUser));
@@ -1438,15 +1375,6 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             }
 
             return "";
-        }
-
-        static void RemoveVisitRecord(string record)
-        {
-            List<string> visits = Load("visits.txt");
-
-            visits.Remove(record);
-
-            Save("visits.txt", visits);
         }
 
         static void ServiceTrends()
@@ -1799,7 +1727,6 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             CreateFileIfNotExisting("workers.txt");
             CreateFileIfNotExisting("visits.txt");
             CreateFileIfNotExisting("queues.txt");
-            CreateFileIfNotExisting("actions.txt");
             CreateFileIfNotExisting("counters.txt");
             CreateFileIfNotExisting("stats.txt");
             CreateFileIfNotExisting("hourly.txt");
@@ -1868,12 +1795,6 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                 }
             }
 
-            List<string> actions = Load("actions.txt");
-            foreach (string action in actions)
-            {
-                actionHistory.Push(action);
-            }
-
             List<string> counters = Load("counters.txt");
             foreach (string line in counters)
             {
@@ -1912,6 +1833,12 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                 if (!int.TryParse(split[1], out int count)) continue;
                 hourlyPatients[hour] = count;
             }
+
+            List<string> visitedPatients = Load("visits.txt");
+            foreach (string visit in visitedPatients)
+            {
+                servicedPatients.Push(visit);
+            }
         }
 
         static List<string> Load(string fileName)
@@ -1932,12 +1859,13 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
         static void SaveCounters()
         {
             var lines = new List<string>
-    {
-        $"Consultation|{consultationCounter}",
-        $"Vaccination|{vaccinationCounter}",
-        $"MaternalCare|{maternalcareCounter}",
-        $"MedicineClaim|{medicineclaimCounter}"
-    };
+            {
+                $"Consultation|{consultationCounter}",
+                $"Vaccination|{vaccinationCounter}",
+                $"MaternalCare|{maternalcareCounter}",
+                $"MedicineClaim|{medicineclaimCounter}"
+            };
+
             Save("counters.txt", lines);
         }
 
