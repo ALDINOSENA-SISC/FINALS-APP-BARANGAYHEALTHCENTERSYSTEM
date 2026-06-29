@@ -1717,6 +1717,74 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
 
         }
 
+        static void PromptDataSetup()
+{
+    while (true)
+    {
+        Console.Clear();
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine(@"
+  +==================================================+
+  |           FIRST TIME SETUP                       |
+  +==================================================+");
+        Console.ResetColor();
+        Console.ForegroundColor = ConsoleColor.Gray;
+        Console.WriteLine("\n  Welcome! This appears to be a fresh installation.");
+        Console.WriteLine("  Would you like to load pre-defined demo data to");
+        Console.WriteLine("  simulate a real health center experience?\n");
+        Console.ResetColor();
+
+        PrintMenuItem("1", "Load Demo Data (recommended for testing)");
+        PrintMenuItem("2", "Start Clean (empty system)");
+
+        Divider();
+        Console.ForegroundColor = ConsoleColor.Gray;
+        Console.Write("\n  Enter your choice: ");
+        Console.ForegroundColor = ConsoleColor.White;
+
+        if (int.TryParse(Console.ReadLine(), out int choice))
+        {
+            switch (choice)
+            {
+                case 1:
+                    DefaultWorkers();
+                    DefaultPatients();
+                    DefaultQueues();
+                    DefaultVisits();
+                    DefaultStats();
+                    DefaultCounters();
+                    DefaultHourly();
+
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("\n  Demo data loaded successfully!");
+                    Console.WriteLine("\n  Check program files for more information!");
+                    Console.ResetColor();
+                    Thread.Sleep(3000);
+                    return;
+
+                case 2:
+                    DefaultWorkers();
+
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("\n  Starting with a clean system.");
+                    Console.WriteLine("  Default health worker accounts have been created.");
+                    Console.WriteLine("\n  Check program files for more information!");
+                    Console.ResetColor();
+                    Thread.Sleep(3000);
+                    return;
+
+                default:
+                    InvalidInput();
+                    break;
+            }
+        }
+        else
+        {
+            InvalidInput();
+        }
+    }
+}
+
         static void CreateFileIfNotExisting(string fileName)
         {
             if (!File.Exists(fileName))
@@ -1736,16 +1804,13 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             CreateFileIfNotExisting("stats.txt");
             CreateFileIfNotExisting("hourly.txt");
 
-            if (Load("workers.txt").Count == 0)
+            bool isFirstRun = Load("workers.txt").Count == 0 && Load("patients.txt").Count == 0;
+
+            if (isFirstRun)
             {
-                DefaultWorkers();
+                PromptDataSetup();
             }
 
-            //remove comment if you want default patients
-            /*if (Load("patients.txt").Count == 0)
-            {
-                DefaultPatients();
-            }*/
         }
 
         static void InvalidInput()
@@ -1964,10 +2029,112 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                 "Clark|Labay",
                 "Zak|Guevarra",
                 "Keeyan|Segismundo",
-                "Art|Cuaresma"
+                "Art|Cuaresma",
+                "Keith|Santos",
+                "Rezdee|Navarro",
+                "Ariane|Abante",
+                "Marco|Secreto",
+                "Amrisse|Tagoc",
+                "Kyle|Luces"
             };
 
             Save("patients.txt", defaultPatients);
+        }
+
+        static void DefaultQueues()
+        {
+            var defaultQueues = new List<string>
+            {
+                "C-001|Keeyan|Consultation|Emergency|06/30/26|08:00 AM",
+                "C-002|Keith|Consultation|Senior Citizen|06/30/26|09:00 AM",
+                "C-003|Gian|Consultation|Regular|06/30/26|09:30 AM",
+                "C-004|Rezdee|Consultation|Regular|06/30/26|10:00 AM",
+
+        
+                "V-001|Marco|Vaccination|PWD|06/30/26|09:00 AM",
+                "V-002|Simon|Vaccination|Regular|06/30/26|09:30 AM",
+                "V-003|Ariane|Vaccination|Regular|06/30/26|10:00 AM",
+
+        
+                "MAC-001|Amrisse|Maternal Care|Pregnant|06/30/26|08:30 AM",
+                "MAC-002|Keith|Maternal Care|Regular|06/30/26|09:15 AM",
+
+        
+                "MEC-001|Art|Medicine Claim|Senior Citizen|06/30/26|10:30 AM",
+                "MEC-002|Zak|Medicine Claim|Regular|06/30/26|11:00 AM",
+                "MEC-003|Kyle|Medicine Claim|Regular|06/30/26|11:30 AM",
+            };
+
+            Save("queues.txt", defaultQueues);
+        }
+
+        static void DefaultVisits()
+        {
+            var defaultVisits = new List<string>
+            {
+                "C-001|Clark|Consultation|Emergency|06/29/26|08:00 AM|Rose",
+                "C-002|Gian|Consultation|Regular|06/29/26|09:00 AM|Arnel",
+                "C-003|Rezdee|Consultation|Senior Citizen|06/29/26|09:30 AM|Shayne",
+
+                "V-001|Simon|Vaccination|Regular|06/29/26|10:00 AM|Aldin",
+                "V-002|Ariane|Vaccination|PWD|06/29/26|10:30 AM|Kyle",
+
+                "MAC-001|Amrisse|Maternal Care|Pregnant|06/29/26|08:30 AM|Rose",
+                "MAC-002|Keith|Maternal Care|Regular|06/29/26|09:15 AM|Shayne",
+
+                "MEC-001|Art|Medicine Claim|Senior Citizen|06/29/26|11:00 AM|Arnel",
+                "MEC-002|Zak|Medicine Claim|Regular|06/29/26|11:30 AM|Kyle",
+            };
+
+            Save("visits.txt", defaultVisits);
+        }
+
+        static void DefaultStats()
+        {
+            var defaultStats = new List<string>
+            {
+                "Consultation|3",
+                "Vaccination|2",
+                "Maternal Care|2",
+                "Medicine Claim|2",
+                "Senior Citizen|2",
+                "PWD|1",
+                "Pregnant|1",
+                "Emergency|1"
+            };
+
+            Save("stats.txt", defaultStats);
+        }
+
+        static void DefaultCounters()
+        {
+            var defaultCounters = new List<string>
+            {
+                "Consultation|5",
+                "Vaccination|4",
+                "MaternalCare|3",
+                "MedicineClaim|4"
+            };
+
+            Save("counters.txt", defaultCounters);
+        }
+
+        static void DefaultHourly()
+        {
+            var defaultHourly = new List<string>();
+
+            int[] counts = new int[24];
+            counts[8] = 2;  // Clark and Amrisse
+            counts[9] = 4;  // Gian, Rezdee, Keith, Ariane
+            counts[10] = 2; // Simon, Ariane
+            counts[11] = 2; // Art, Zak
+
+            for (int i = 0; i < 24; i++)
+            {
+                defaultHourly.Add($"{i}|{counts[i]}");
+            }
+
+            Save("hourly.txt", defaultHourly);
         }
 
         //====================UI HELPERS====================
