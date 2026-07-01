@@ -488,7 +488,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             else
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine($">> There are {position - 1} patients ahead of you.");
+                Console.WriteLine($">> There is/are {position - 1} patient(s) ahead of you.");
                 Console.ResetColor();
             }
 
@@ -688,16 +688,16 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             switch (service)
             {
                 case "Consultation":
-                    return $"C-{NumberFormat(consultationCounter++)}";
+                    return $"CO-{NumberFormat(consultationCounter++)}";
 
                 case "Vaccination":
-                    return $"V-{NumberFormat(vaccinationCounter++)}";
+                    return $"VA-{NumberFormat(vaccinationCounter++)}";
 
                 case "Maternal Care":
-                    return $"MAC-{NumberFormat(maternalcareCounter++)}";
+                    return $"MA-{NumberFormat(maternalcareCounter++)}";
 
                 case "Medicine Claim":
-                    return $"MEC-{NumberFormat(medicineclaimCounter++)}";
+                    return $"ME-{NumberFormat(medicineclaimCounter++)}";
             }
 
             return "";
@@ -765,7 +765,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                 Console.ResetColor();
 
                 PrintMenuItem("1", "Call Next Patient");
-                PrintMenuItem("2", "Complete Service");
+                PrintMenuItem("2", "Serve Patient");
                 PrintMenuItem("3", "Skip Patient");
                 PrintMenuItem("4", "View Completed Patients");
                 PrintMenuItem("5", "Back");
@@ -784,7 +784,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                             break;
 
                         case 2:
-                            CompleteService();
+                            ServePatient();
                             break;
 
                         case 3:
@@ -824,21 +824,49 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                     {
                         if (currentConsultationPatient != "")
                         {
-                            PrintAlert("A patient is already being served."); 
-                            PressAnyKey(); 
+                            PrintAlert("A patient is already being served.");
+                            PressAnyKey();
                             return;
                         }
 
-                        currentConsultationPatient = PeekNextPatient(consultationRegularQueue, consultationPriorityQueue);
+                        string next = PeekNextPatient(consultationRegularQueue, consultationPriorityQueue);
 
-                        if (currentConsultationPatient == "")
+                        if (next == "")
                         {
-                            PrintAlert("No patients in queue."); 
-                            PressAnyKey(); 
+                            PrintAlert("No patients in queue.");
+                            PressAnyKey();
                             return;
                         }
 
-                        serving = Queue(currentConsultationPatient).userName;
+                        Console.Clear();
+                        QueueDisplay("CONSULTATION QUEUE", consultationRegularQueue, consultationPriorityQueue);
+
+                        while (true)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Gray;
+                            Console.Write($"\n  Call {Queue(next).userName}? (Y/N): ");
+                            Console.ForegroundColor = ConsoleColor.White;
+                            string confirm = Console.ReadLine().ToLower();
+                            Console.ResetColor();
+
+                            if (confirm == "y")
+                            {
+                                currentConsultationPatient = next;
+                                serving = Queue(currentConsultationPatient).userName;
+                                break;
+                            }
+                            else if (confirm == "n")
+                            {
+                                return;
+                            }
+                            else
+                            {
+                                InvalidInput();
+                                Console.Clear();
+                                QueueDisplay("CONSULTATION QUEUE", consultationRegularQueue, consultationPriorityQueue);
+                            }
+                        }
+
                         break;
                     }
 
@@ -851,16 +879,44 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                             return;
                         }
 
-                        currentVaccinationPatient = PeekNextPatient(vaccinationRegularQueue, vaccinationPriorityQueue);
+                        string next = PeekNextPatient(vaccinationRegularQueue, vaccinationPriorityQueue);
 
-                        if (currentVaccinationPatient == "")
+                        if (next == "")
                         {
                             PrintAlert("No patients in queue.");
                             PressAnyKey();
                             return;
                         }
 
-                        serving = Queue(currentConsultationPatient).userName;
+                        Console.Clear();
+                        QueueDisplay("VACCINATION QUEUE", vaccinationRegularQueue, vaccinationPriorityQueue);
+
+                        while (true)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Gray;
+                            Console.Write($"\n  Call {Queue(next).userName}? (Y/N): ");
+                            Console.ForegroundColor = ConsoleColor.White;
+                            string confirm = Console.ReadLine().ToLower();
+                            Console.ResetColor();
+
+                            if (confirm == "y")
+                            {
+                                currentVaccinationPatient = next;
+                                serving = Queue(currentVaccinationPatient).userName;
+                                break;
+                            }
+                            else if (confirm == "n")
+                            {
+                                return;
+                            }
+                            else
+                            {
+                                InvalidInput();
+                                Console.Clear();
+                                QueueDisplay("VACCINATION QUEUE", vaccinationRegularQueue, vaccinationPriorityQueue);
+                            }
+                        }
+
                         break;
                     }
 
@@ -873,16 +929,44 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                             return;
                         }
 
-                        currentMaternalCarePatient = PeekNextPatient(maternalcareRegularQueue, maternalcarePriorityQueue);
+                        string next = PeekNextPatient(maternalcareRegularQueue, maternalcarePriorityQueue);
 
-                        if (currentMaternalCarePatient == "")
+                        if (next == "")
                         {
                             PrintAlert("No patients in queue.");
                             PressAnyKey();
                             return;
                         }
 
-                        serving = Queue(currentConsultationPatient).userName;
+                        Console.Clear();
+                        QueueDisplay("MATERNAL CARE QUEUE", maternalcareRegularQueue, maternalcarePriorityQueue);
+
+                        while (true)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Gray;
+                            Console.Write($"\n  Call {Queue(next).userName}? (Y/N): ");
+                            Console.ForegroundColor = ConsoleColor.White;
+                            string confirm = Console.ReadLine().ToLower();
+                            Console.ResetColor();
+
+                            if (confirm == "y")
+                            {
+                                currentMaternalCarePatient = next;
+                                serving = Queue(currentMaternalCarePatient).userName;
+                                break;
+                            }
+                            else if (confirm == "n")
+                            {
+                                return;
+                            }
+                            else
+                            {
+                                InvalidInput();
+                                Console.Clear();
+                                QueueDisplay("MATERNAL CARE QUEUE", maternalcareRegularQueue, maternalcarePriorityQueue);
+                            }
+                        }
+
                         break;
                     }
 
@@ -895,18 +979,49 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                             return;
                         }
 
-                        currentMedicineClaimPatient = PeekNextPatient(medicineclaimRegularQueue, medicineclaimPriorityQueue);
+                        string next = PeekNextPatient(medicineclaimRegularQueue, medicineclaimPriorityQueue);
 
-                        if (currentMedicineClaimPatient == "")
+                        if (next == "")
                         {
                             PrintAlert("No patients in queue.");
                             PressAnyKey();
                             return;
                         }
 
-                        serving = Queue(currentConsultationPatient).userName;
+                        Console.Clear();
+                        QueueDisplay("MEDICINE CLAIM QUEUE", medicineclaimRegularQueue, medicineclaimPriorityQueue);
+
+                        while (true)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Gray;
+                            Console.Write($"\n  Call {Queue(next).userName}? (Y/N): ");
+                            Console.ForegroundColor = ConsoleColor.White;
+                            string confirm = Console.ReadLine().ToLower();
+                            Console.ResetColor();
+
+                            if (confirm == "y")
+                            {
+                                currentMedicineClaimPatient = next;
+                                serving = Queue(currentMedicineClaimPatient).userName;
+                                break;
+                            }
+                            else if (confirm == "n")
+                            {
+                                return;
+                            }
+                            else
+                            {
+                                InvalidInput();
+                                Console.Clear();
+                                QueueDisplay("MEDICINE CLAIM QUEUE", medicineclaimRegularQueue, medicineclaimPriorityQueue);
+                            }
+                        }
+
                         break;
                     }
+
+                case 5:
+                    return;
 
                 default:
                     InvalidInput();
@@ -925,9 +1040,68 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             PressAnyKey();
         }
 
+        static void ServePatient()
+        {
+            HeaderDisplay("SERVE PATIENT");
+            ShowCurrentPatients();
+
+            int service = ServiceHandling();
+
+            switch (service)
+            {
+                case 1:
+                    {
+                        if (FinishService(consultationRegularQueue, consultationPriorityQueue, currentConsultationPatient))
+                        {
+                            currentConsultationPatient = "";
+                        }
+
+                        break;
+                    }
+
+                case 2:
+                    {
+                        if (FinishService(vaccinationRegularQueue, vaccinationPriorityQueue, currentVaccinationPatient))
+                        {
+                            currentVaccinationPatient = "";
+                        }
+
+                        break;
+                    }
+
+                case 3:
+                    {
+                        if (FinishService(maternalcareRegularQueue, maternalcarePriorityQueue, currentMaternalCarePatient))
+                        {
+                            currentMaternalCarePatient = "";
+                        }
+
+                        break;
+                    }
+
+                case 4:
+                    {
+                        if (FinishService(medicineclaimRegularQueue, medicineclaimPriorityQueue, currentMedicineClaimPatient))
+                        {
+                            currentMedicineClaimPatient = "";
+                        }
+
+                        break;
+                    }
+
+                case 5:
+                    return;
+
+                default:
+                    InvalidInput();
+                    break;
+            }
+        }
+
         static void SkipService()
         {
             HeaderDisplay("SKIP PATIENT");
+            ShowCurrentPatients();
 
             int service = ServiceHandling();
             string skippedPatient = "";
@@ -1002,6 +1176,9 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                         break;
                     }
 
+                case 5:
+                    return;
+
                 default:
                     InvalidInput();
                     return;
@@ -1074,13 +1251,13 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                     Console.ForegroundColor = ConsoleColor.Gray;
                     Console.Write($"  {count,2}. ");
                     Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.Write($"[{currentPatient.queueNumber}]");
+                    Console.Write($"[{currentPatient.queueNumber}]{""}");
                     Console.ForegroundColor = ConsoleColor.White;
-                    Console.Write($"  {currentPatient.userName,-20}");
+                    Console.Write($"  {currentPatient.userName,-8}");
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.Write($"  {currentPatient.chosenService,-15}");
                     Console.ForegroundColor = ConsoleColor.Gray;
-                    Console.Write($"  ({currentPatient.patientType})");
+                    Console.Write($"  {currentPatient.patientType,-14}");
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine($"  served by {currentPatient.workerName}");
                     Console.ResetColor();
@@ -1228,6 +1405,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             PrintMenuItem("2", "Vaccination");
             PrintMenuItem("3", "Maternal Care");
             PrintMenuItem("4", "Medicine Claim");
+            PrintMenuItem("5", "Back");
 
             Divider();
             Console.ForegroundColor = ConsoleColor.Gray;
@@ -1240,60 +1418,6 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             }
 
             return -1;
-        }
-
-        static void CompleteService()
-        {
-            HeaderDisplay("COMPLETE SERVICE");
-
-            int service = ServiceHandling();
-
-            switch (service)
-            {
-                case 1:
-                    {
-                        if (FinishService(consultationRegularQueue, consultationPriorityQueue, currentConsultationPatient))
-                        {
-                            currentConsultationPatient = "";
-                        }
-
-                        break;
-                    }
-
-                case 2:
-                    {
-                        if (FinishService(vaccinationRegularQueue, vaccinationPriorityQueue, currentVaccinationPatient))
-                        {
-                            currentVaccinationPatient = "";
-                        }
-
-                        break;
-                    }
-
-                case 3:
-                    {
-                        if (FinishService(maternalcareRegularQueue, maternalcarePriorityQueue, currentMaternalCarePatient))
-                        {
-                            currentMaternalCarePatient = "";
-                        }
-
-                        break;
-                    }
-
-                case 4:
-                    {
-                        if (FinishService(medicineclaimRegularQueue, medicineclaimPriorityQueue, currentMedicineClaimPatient))
-                        {
-                            currentMedicineClaimPatient = "";
-                        }
-
-                        break;
-                    }
-
-                default:
-                    InvalidInput();
-                    break;
-            }
         }
 
         static string SkipPatient(Queue<string> regularQueue, Queue<string> priorityQueue)
@@ -1375,6 +1499,44 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             }
 
             return "";
+        }
+
+        static void ShowCurrentPatients()
+        {
+            SectionHeader("CURRENTLY BEING SERVED");
+            Console.WriteLine();
+
+            PrintCurrentPatient("Consultation", currentConsultationPatient);
+            PrintCurrentPatient("Vaccination", currentVaccinationPatient);
+            PrintCurrentPatient("Maternal Care", currentMaternalCarePatient);
+            PrintCurrentPatient("Medicine Claim", currentMedicineClaimPatient);
+
+            Console.WriteLine();
+            Divider();
+        }
+
+        static void PrintCurrentPatient(string service, string record)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write($"  {service,-15} : ");
+
+            if (record == "")
+            {
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.WriteLine("none");
+            }
+            else
+            {
+                var patient = Queue(record);
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write($"{patient.userName,-20}");
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.Write($"  [{patient.queueNumber}]");
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.WriteLine($"  ({patient.patientType})");
+            }
+
+            Console.ResetColor();
         }
 
         static void ServiceTrends()
@@ -1600,6 +1762,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                 {
                     PrintSuccess("Login successful!");
                     currentUser = userName;
+                    PrintSuccess("Loading...");
                     Thread.Sleep(800);
                     return true;
                 }
@@ -1623,6 +1786,13 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             string userName = Console.ReadLine();
             Console.ResetColor();
 
+            if(userName.Trim() == "")
+            {
+                PrintError("Name cannot be empty. Please try again.");
+                PressAnyKey();
+                return;
+            }
+
             if (NameExists(fileName, userName))
             {
                 PrintError("Name already exists. Please choose a different name.");
@@ -1636,6 +1806,13 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
             Console.ForegroundColor = ConsoleColor.White;
             string userPassword = Console.ReadLine();
             Console.ResetColor();
+
+            if (userPassword.Trim() == "")
+            {
+                PrintError("Password cannot be empty. Please try again.");
+                PressAnyKey();
+                return;
+            }
 
             users.Add(UserFormat(userName, userPassword));
             Save(fileName, users);
@@ -1686,6 +1863,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("\n  Demo data loaded successfully!");
                     Console.WriteLine("\n  Check program files for more information!");
+                    Console.WriteLine("\n  Loading");
                     Console.ResetColor();
                     Thread.Sleep(3000);
                     return;
@@ -1697,6 +1875,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
                     Console.WriteLine("\n  Starting with a clean system.");
                     Console.WriteLine("  Default health worker accounts have been created.");
                     Console.WriteLine("\n  Check program files for more information!");
+                    Console.WriteLine("\n  Loading");
                     Console.ResetColor();
                     Thread.Sleep(3000);
                     return;
@@ -1744,6 +1923,7 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("\n  Invalid input. Please try again.");
+            Console.WriteLine("\n  Loading...");
             Console.ResetColor();
             Thread.Sleep(1000);
         }
@@ -1973,24 +2153,24 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
         {
             var defaultQueues = new List<string>
             {
-                "C-001|Keeyan|Consultation|Emergency|06/30/26|08:00 AM",
-                "C-002|Keith|Consultation|Senior Citizen|06/30/26|09:00 AM",
-                "C-003|Gian|Consultation|Regular|06/30/26|09:30 AM",
-                "C-004|Rezdee|Consultation|Regular|06/30/26|10:00 AM",
+                "CO-001|Keeyan|Consultation|Emergency|06/30/26|08:00 AM",
+                "CO-002|Keith|Consultation|Senior Citizen|06/30/26|09:00 AM",
+                "CO-003|Gian|Consultation|Regular|06/30/26|09:30 AM",
+                "CO-004|Rezdee|Consultation|Regular|06/30/26|10:00 AM",
 
         
-                "V-001|Marco|Vaccination|PWD|06/30/26|09:00 AM",
-                "V-002|Simon|Vaccination|Regular|06/30/26|09:30 AM",
-                "V-003|Ariane|Vaccination|Regular|06/30/26|10:00 AM",
+                "VA-001|Marco|Vaccination|PWD|06/30/26|09:00 AM",
+                "VA-002|Simon|Vaccination|Regular|06/30/26|09:30 AM",
+                "VA-003|Ariane|Vaccination|Regular|06/30/26|10:00 AM",
 
         
-                "MAC-001|Amrisse|Maternal Care|Pregnant|06/30/26|08:30 AM",
-                "MAC-002|Keith|Maternal Care|Regular|06/30/26|09:15 AM",
+                "MA-001|Amrisse|Maternal Care|Pregnant|06/30/26|08:30 AM",
+                "MA-002|Keith|Maternal Care|Regular|06/30/26|09:15 AM",
 
         
-                "MEC-001|Art|Medicine Claim|Senior Citizen|06/30/26|10:30 AM",
-                "MEC-002|Zak|Medicine Claim|Regular|06/30/26|11:00 AM",
-                "MEC-003|Kyle|Medicine Claim|Regular|06/30/26|11:30 AM",
+                "ME-001|Art|Medicine Claim|Senior Citizen|06/30/26|10:30 AM",
+                "ME-002|Zak|Medicine Claim|Regular|06/30/26|11:00 AM",
+                "ME-003|Kyle|Medicine Claim|Regular|06/30/26|11:30 AM",
             };
 
             Save("queues.txt", defaultQueues);
@@ -2000,18 +2180,18 @@ namespace FINALS_APP_BARANGAYHEALTHCENTERSYSTEM
         {
             var defaultVisits = new List<string>
             {
-                "C-001|Clark|Consultation|Emergency|06/29/26|08:00 AM|Rose",
-                "C-002|Gian|Consultation|Regular|06/29/26|09:00 AM|Arnel",
-                "C-003|Rezdee|Consultation|Senior Citizen|06/29/26|09:30 AM|Shayne",
+                "CO-001|Clark|Consultation|Emergency|06/29/26|08:00 AM|Rose",
+                "CO-002|Gian|Consultation|Regular|06/29/26|09:00 AM|Arnel",
+                "CO-003|Rezdee|Consultation|Senior Citizen|06/29/26|09:30 AM|Shayne",
 
-                "V-001|Simon|Vaccination|Regular|06/29/26|10:00 AM|Aldin",
-                "V-002|Ariane|Vaccination|PWD|06/29/26|10:30 AM|Kyle",
+                "VA-001|Simon|Vaccination|Regular|06/29/26|10:00 AM|Aldin",
+                "VA-002|Ariane|Vaccination|PWD|06/29/26|10:30 AM|Kyle",
 
-                "MAC-001|Amrisse|Maternal Care|Pregnant|06/29/26|08:30 AM|Rose",
-                "MAC-002|Keith|Maternal Care|Regular|06/29/26|09:15 AM|Shayne",
+                "MA-001|Amrisse|Maternal Care|Pregnant|06/29/26|08:30 AM|Rose",
+                "MA-002|Keith|Maternal Care|Regular|06/29/26|09:15 AM|Shayne",
 
-                "MEC-001|Art|Medicine Claim|Senior Citizen|06/29/26|11:00 AM|Arnel",
-                "MEC-002|Zak|Medicine Claim|Regular|06/29/26|11:30 AM|Kyle",
+                "ME-001|Art|Medicine Claim|Senior Citizen|06/29/26|11:00 AM|Arnel",
+                "ME-002|Zak|Medicine Claim|Regular|06/29/26|11:30 AM|Kyle",
             };
 
             Save("visits.txt", defaultVisits);
